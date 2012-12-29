@@ -1,3 +1,6 @@
+using ConsoleTools.Utils;
+
+
 namespace ConsoleTools.Exceptions {
     public class MissingRequiredOptionException : BindingException {
         #region Data

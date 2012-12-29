@@ -1,4 +1,3 @@
-using System;
 using ConsoleTools.Exceptions;
 using ConsoleTools.Tests.Data;
 using NUnit.Framework;
@@ -76,7 +75,7 @@ namespace ConsoleTools.Tests {
 
         //----------------------------------------------------------------------[]
         [Test]
-        [ExpectedException(typeof(PositionalBindingException))]
+        [ExpectedException(typeof (PositionalBindingException))]
         public void TestRequiredPositionalOptionBinding() {
             ParseTo<RequiredPositionalOptions>();
         }
@@ -107,14 +106,14 @@ namespace ConsoleTools.Tests {
 
         //----------------------------------------------------------------------[]
         [Test]
-        [ExpectedException(typeof(MissingRequiredOptionException))]
+        [ExpectedException(typeof (MissingRequiredOptionException))]
         public void TestMissingRequiredArgumentThrowsException() {
             ParseTo<MandatoryOptions>();
         }
 
         //----------------------------------------------------------------------[]
         [Test]
-        [ExpectedException(typeof(BindingException),"Only one property can contain unbound options")]
+        [ExpectedException(typeof (BindingException), "Only one property can contain unbound options")]
         public void TestOptionsObjectCanContainOnlyOnePropertyToBindUnboundArguments() {
             ParseTo<OptionsWithTwoUnboundOptionsProperties>("a", "b");
         }
@@ -127,6 +126,74 @@ namespace ConsoleTools.Tests {
             Assert.AreEqual("bazzinga", opt.OptionalValue);
         }
 
+        //----------------------------------------------------------------------[]
+        [Test]
+        public void TestDefaultListBindingWithoutConversion() {
+            ListOptions opts = ParseTo<ListOptions>("/default=1,2,3,4");
+
+            Assert.IsNotNull(opts);
+            Assert.IsNotNull(opts.Default);
+            Assert.AreEqual(4, opts.Default.Length);
+            Assert.AreEqual("1", opts.Default[0]);
+            Assert.AreEqual("2", opts.Default[1]);
+            Assert.AreEqual("3", opts.Default[2]);
+            Assert.AreEqual("4", opts.Default[3]);
+        }
+
+        //----------------------------------------------------------------------[]
+        [Test]
+        public void TestListBindingWithArrayConversion() {
+            ListOptions opts = ParseTo<ListOptions>("/stringarray=foo, bar, bazz");
+
+            Assert.IsNotNull(opts);
+            Assert.IsNotNull(opts.StringArray);
+            Assert.AreEqual(3, opts.StringArray.Length);
+            Assert.AreEqual("foo", opts.StringArray[0]);
+            Assert.AreEqual(" bar", opts.StringArray[1]);
+            Assert.AreEqual(" bazz", opts.StringArray[2]);
+        }
+
+        //----------------------------------------------------------------------[]
+        [Test]
+        public void TestListBindingWithGenericListConversion() {
+            ListOptions opts = ParseTo<ListOptions>("/list=1,2,-9,4");
+
+            Assert.IsNotNull(opts);
+            Assert.IsNotNull(opts.IntList);
+            Assert.AreEqual(4, opts.IntList.Count);
+            Assert.AreEqual(1, opts.IntList[0]);
+            Assert.AreEqual(2, opts.IntList[1]);
+            Assert.AreEqual(-9, opts.IntList[2]);
+            Assert.AreEqual(4, opts.IntList[3]);
+        }
+
+        //----------------------------------------------------------------------[]
+        [Test]
+        public void TestListPositionalBindingWithConversion() {
+            ListOptions opts = ParseTo<ListOptions>("true,false,false,true");
+
+            Assert.IsNotNull(opts);
+            Assert.IsNotNull(opts.Positional);
+            Assert.AreEqual(4, opts.Positional.Length);
+            Assert.IsTrue(opts.Positional[0]);
+            Assert.IsFalse(opts.Positional[1]);
+            Assert.IsFalse(opts.Positional[2]);
+            Assert.IsTrue(opts.Positional[3]);
+        }
+
+        //----------------------------------------------------------------------[]
+        [Test]
+        public void TestListBindingWithSpecifiedSeparator() {
+            ListOptions options = ParseTo<ListOptions>("/separated=1_2_221_-7");   
+            
+            Assert.IsNotNull(options);
+            Assert.IsNotNull(options.SeparatedList);
+            Assert.AreEqual(4, options.SeparatedList.Length);
+            Assert.AreEqual(1,options.SeparatedList[0]);
+            Assert.AreEqual(2,options.SeparatedList[1]);
+            Assert.AreEqual(221,options.SeparatedList[2]);
+            Assert.AreEqual(-7,options.SeparatedList[3]);
+        }
         #endregion
 
         #region Routines
