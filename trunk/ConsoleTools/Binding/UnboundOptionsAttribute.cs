@@ -1,3 +1,6 @@
+using ConsoleTools.Utils;
+
+
 namespace ConsoleTools.Binding {
     public class UnboundOptionsAttribute : OptionBindingAttribute {
         #region Construction

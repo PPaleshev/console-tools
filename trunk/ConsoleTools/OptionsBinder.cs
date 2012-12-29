@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using ConsoleTools.Binding;
 using ConsoleTools.Exceptions;
 using ConsoleTools.Utils;
@@ -13,7 +14,6 @@ namespace ConsoleTools {
 
         private readonly CmdArgs _args;
         private readonly IList<OptionMetadata> _optionsMetadata = new List<OptionMetadata>();
-        private readonly IList<OptionMetadata> _missingRequiredOptions = new List<OptionMetadata>();
         private readonly List<int> _boundFreeArgsPositions = new List<int>();
 
         #endregion
@@ -64,25 +64,25 @@ namespace ConsoleTools {
         }
 
         //----------------------------------------------------------------------[]
-        private void BindNamedOptions(object optionsObject) {
+        private void BindNamedOptions(object target) {
             foreach (OptionMetadata metadata in Filters.GetNamedArguments(_optionsMetadata)) {
-                BindNamedOption(metadata, optionsObject);
+                BindNamedOption(metadata, target);
             }
         }
 
         //----------------------------------------------------------------------[]
-        private void BindPositionalOptions(object optionsObject) {
+        private void BindPositionalOptions(object target) {
             foreach (OptionMetadata metadata in Filters.GetPositionalArguments(_optionsMetadata)) {
-                BindPositionalOption(metadata, optionsObject);
+                BindPositionalOption(metadata, target);
             }
         }
 
         //----------------------------------------------------------------------[]
-        private void BindUnboundOptions(object optionsObject) {
+        private void BindUnboundOptions(object target) {
             try {
                 OptionMetadata unboundOptionsTarget = Filters.GetSingleUnboundOptionsMetadataOrThrow(_optionsMetadata);
                 if (unboundOptionsTarget != null) {
-                    BindUnboundOptions(unboundOptionsTarget, optionsObject);
+                    BindUnboundOptions(unboundOptionsTarget, target);
                 }
             } catch (ArgumentException) {
                 throw new BindingException("Only one property can contain unbound options");
@@ -115,9 +115,7 @@ namespace ConsoleTools {
             }
 
             if (needConversion) {
-                convertedValue = metadata.PropertyDescriptor
-                    .Converter
-                    .ConvertFromString(rawValue);
+                convertedValue = ContextfulConvert(rawValue, target, metadata);
             }
 
             if (needBinding) {
@@ -152,8 +150,7 @@ namespace ConsoleTools {
             }
 
             if (needConversion) {
-                convertedValue = descriptor
-                    .Converter.ConvertFromString(rawValue);
+                convertedValue = ContextfulConvert(rawValue, target, metadata);
             }
 
             if (needBinding) {
@@ -183,6 +180,14 @@ namespace ConsoleTools {
             }
         }
 
+        //----------------------------------------------------------------------[]
+        private static object ContextfulConvert(string text, object instance, OptionMetadata metadata) {
+            BindingContext context = new BindingContext(instance, metadata);
+            return metadata
+                .PropertyDescriptor
+                .Converter
+                .ConvertFromString(context, CultureInfo.InvariantCulture, text);
+        }
         #endregion
 
         #region Static
