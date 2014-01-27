@@ -38,7 +38,7 @@ namespace ConsoleTools.Tests.Data {
         }
 
         //----------------------------------------------------------------------[]
-        [NamedOption("flagvalue;f"), Flag]
+        [NamedOption("flagvalue;f"), Switch]
         public bool? FlagValue {
             get { return _flagValue; }
             set { _flagValue = value; }
