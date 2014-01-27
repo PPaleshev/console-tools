@@ -1,96 +1,92 @@
 // Павел "Nogard" Палешев [dragon.metalheart@gmail.com]
 
+using System;
+
 namespace ConsoleTools {
+    /// <summary>
+    /// Класс, выполняющий разбор списка аргументов, переданных при вызове приложения.
+    /// </summary>
     public class ArgumentParser {
-        #region Data
+        /// <summary>
+        /// Массив префиксов по умолчанию.
+        /// </summary>
+        static readonly string[] DefaultPrefixes = new[] {"/", "-", "--"};
 
-        //===============================================================================================[]
+        /// <summary>
+        /// Массив разделителей имени и значения в именованных параметрах по умолчанию.
+        /// </summary>
+        static readonly char[] DefaultSeparators = new[] {':', '='};
 
-        private string[] _argumentPrefixes = new string[] {"/", "-", "--"};
-        private char[] _separators = new char[] {':', '='};
+        /// <summary>
+        /// Массив разделителей имени и значения при разборе именованных параметров.
+        /// </summary>
+        readonly char[] separators;
 
-        //===============================================================================================[]
+        /// <summary>
+        /// Массив префиксов именованных параметров.
+        /// </summary>
+        readonly string[] prefixes;
 
-        #endregion
-
-        #region Properties
-
-        public char[] Separators {
-            get { return _separators; }
-            set { _separators = value; }
+        /// <summary>
+        /// Создаёт новый экземпляр парсера с префиксами и разделителями по умолчанию.
+        /// </summary>
+        public ArgumentParser()
+        {
+            separators = DefaultSeparators;
+            prefixes = DefaultPrefixes;
         }
 
-        //----------------------------------------------------------------------[]
-        public string[] ArgumentPrefixes {
-            get { return _argumentPrefixes; }
-            set { _argumentPrefixes = value; }
+        /// <summary>
+        /// Создаёт новый экземпляр парсера.
+        /// </summary>
+        /// <param name="prefixes">Массив префиксов для разбора именованных параметров.</param>
+        /// <param name="separators">Массив разделителей.</param>
+        public ArgumentParser(string[] prefixes, char[] separators)
+        {
+            if (prefixes == null || prefixes.Length == 0)
+                throw new ArgumentException("prefixes");
+            if (separators == null || separators.Length == 0)
+                throw new ArgumentException("separators");
+            this.prefixes = prefixes;
+            this.separators = separators;
         }
 
-        #endregion
-
-        #region Construction
-
-        //===============================================================================================[]
-        public ArgumentParser() {
-        }
-
-        //----------------------------------------------------------------------[]
-        public ArgumentParser(string[] propertyArgumentPrefixes) {
-            _argumentPrefixes = propertyArgumentPrefixes;
-        }
-
-        //----------------------------------------------------------------------[]
-        public ArgumentParser(string[] argumentPrefixes, char[] valueSeparators) {
-            _argumentPrefixes = argumentPrefixes;
-            _separators = valueSeparators;
-        }
-
-        //===============================================================================================[]
-
-        #endregion
-
-        #region Methods
-
-        //===============================================================================================[]
+        /// <summary>
+        /// Выполняет разбор переданных аргументов.
+        /// </summary>
+        /// <param name="args">Аргументы для разбора.</param>
+        /// <returns></returns>
         public CmdArgs Parse(string[] args) {
-            CmdArgs result = new CmdArgs();
+            var result = new CmdArgs();
 
-            foreach (string arg in args) {
-                if (string.IsNullOrEmpty(arg)) {
+            foreach (var arg in args) {
+                if (string.IsNullOrEmpty(arg))
                     continue;
-                }
 
-                //Парсинг именованных аргументов. Именованные аргументы начинаются с одного из _argumentPrefix
                 string argPrefix;
-                if (!TestIsArgument(arg, out argPrefix)) {
-                    result.AddDefaultArg(arg);
+                if (!CheckIsNamedArgument(arg, out argPrefix)) {
+                    result.AddUnboundArg(arg);
                     continue;
                 }
 
-                int separatorIndex = arg.IndexOfAny(_separators, argPrefix.Length);
-                string option = arg.Substring(argPrefix.Length, separatorIndex == -1
-                                                                    ? arg.Length - argPrefix.Length
-                                                                    : separatorIndex - argPrefix.Length);
+                var separatorIndex = arg.IndexOfAny(separators, argPrefix.Length);
+                var option = arg.Substring(argPrefix.Length, separatorIndex == -1 ? arg.Length - argPrefix.Length : separatorIndex - argPrefix.Length);
                 //Если в аргументе не найдено разделителей, то это флаг
-                string optionValue = separatorIndex == -1
-                                         ? string.Empty
-                                         : arg.Substring(separatorIndex + 1, arg.Length - separatorIndex - 1);
-
+                var optionValue = separatorIndex == -1 ? string.Empty : arg.Substring(separatorIndex + 1, arg.Length - separatorIndex - 1);
                 result.AddNamedArg(option, optionValue);
             }
 
             return result;
         }
 
-
-        //===============================================================================================[]
-
-        #endregion
-
-        #region Routines
-
-        private bool TestIsArgument(string value, out string prefix) {
-            foreach (string argprefix in _argumentPrefixes) {
+        /// <summary>
+        /// Проверяет, является ли переданный аргумент именованным значением.
+        /// </summary>
+        /// <param name="value">Проверяемый аргумент.</param>
+        /// <param name="prefix">Возвращаемое значение, представляющее собой префикс, которым отмечаются именованные аргументы.</param>
+        /// <returns>Возвращает true, если переданный аргумент является именованным значением, иначе false.</returns>
+        bool CheckIsNamedArgument(string value, out string prefix) {
+            foreach (string argprefix in prefixes) {
                 if (value.StartsWith(argprefix)) {
                     prefix = argprefix;
                     return true;
@@ -99,12 +95,5 @@ namespace ConsoleTools {
             prefix = string.Empty;
             return false;
         }
-
-        //----------------------------------------------------------------------[]
-        private bool KeyValueMode {
-            get { return _argumentPrefixes.Length == 0; }
-        }
-
-        #endregion
     }
 }

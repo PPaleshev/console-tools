@@ -9,7 +9,7 @@ namespace ConsoleTools.Utils {
 
         public static IList<OptionMetadata> GetNamedArguments(IList<OptionMetadata> metadatas) {
             return new List<OptionMetadata>(metadatas)
-                .FindAll(delegate(OptionMetadata metadata) { return metadata.ArgumentType == ArgumentType.Named; });
+                .FindAll(metadata => metadata.ArgumentType == ArgumentType.Named);
         }
 
         //----------------------------------------------------------------------[]

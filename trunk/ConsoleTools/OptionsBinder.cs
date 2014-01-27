@@ -6,32 +6,26 @@ using System.Globalization;
 using ConsoleTools.Binding;
 using ConsoleTools.Exceptions;
 using ConsoleTools.Utils;
+using System.Linq;
 
 
 namespace ConsoleTools {
-    public class OptionsBinder {
-        #region Data
+    public class OptionsBinder
+    {
+        readonly CmdArgs args;
+        readonly IList<OptionMetadata> optionsMetadata = new List<OptionMetadata>();
+        readonly List<int> boundFreeArgsPositions = new List<int>();
 
-        private readonly CmdArgs _args;
-        private readonly IList<OptionMetadata> _optionsMetadata = new List<OptionMetadata>();
-        private readonly List<int> _boundFreeArgsPositions = new List<int>();
-
-        #endregion
-
-        #region Construction
-
-        private OptionsBinder(CmdArgs args) {
-            _args = args;
+        OptionsBinder(CmdArgs args)
+        {
+            this.args = args;
         }
 
-        #endregion
-
-        #region Methods
-
-        private TOptions Bind<TOptions>() where TOptions : new() {
+        TOptions Bind<TOptions>() where TOptions : new()
+        {
             ExtractDeclaredOptionDefinitions(typeof (TOptions));
 
-            TOptions optionsObject = new TOptions();
+            var optionsObject = new TOptions();
 
             BindNamedOptions(optionsObject);
             BindPositionalOptions(optionsObject);
@@ -40,169 +34,151 @@ namespace ConsoleTools {
             return optionsObject;
         }
 
-        #endregion
-
-        #region Routines
-
-        private void ExtractDeclaredOptionDefinitions(Type optionsType) {
-            PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(optionsType);
-            foreach (PropertyDescriptor property in descriptors) {
-                OptionBindingAttribute attr =
-                    (OptionBindingAttribute) property.Attributes[typeof (OptionBindingAttribute)];
-
-                if (attr == null) {
+        void ExtractDeclaredOptionDefinitions(Type optionsType)
+        {
+            var descriptors = TypeDescriptor.GetProperties(optionsType);
+            foreach (PropertyDescriptor property in descriptors)
+            {
+                var attr = (OptionBindingAttribute) property.Attributes[typeof (OptionBindingAttribute)];
+                if (attr == null)
                     continue;
-                }
-
-                OptionMetadata metadata = new OptionMetadata(property);
+                var metadata = new OptionMetadata(property);
                 metadata.IsRequired = attr.IsRequired;
-                metadata.IsFlag = property.Attributes[typeof (FlagAttribute)] != null;
+                metadata.IsFlag = property.Attributes[typeof (SwitchAttribute)] != null;
                 attr.FillMetadata(metadata);
-
-                _optionsMetadata.Add(metadata);
+                optionsMetadata.Add(metadata);
             }
         }
 
         //----------------------------------------------------------------------[]
-        private void BindNamedOptions(object target) {
-            foreach (OptionMetadata metadata in Filters.GetNamedArguments(_optionsMetadata)) {
+        void BindNamedOptions(object target)
+        {
+            foreach (var metadata in optionsMetadata.Where(metadata => metadata.ArgumentType == ArgumentType.Named))
                 BindNamedOption(metadata, target);
-            }
         }
 
         //----------------------------------------------------------------------[]
-        private void BindPositionalOptions(object target) {
-            foreach (OptionMetadata metadata in Filters.GetPositionalArguments(_optionsMetadata)) {
+        void BindPositionalOptions(object target)
+        {
+            foreach (var metadata in optionsMetadata.Where(metadata => metadata.ArgumentType == ArgumentType.Positional))
                 BindPositionalOption(metadata, target);
-            }
         }
 
         //----------------------------------------------------------------------[]
-        private void BindUnboundOptions(object target) {
-            try {
-                OptionMetadata unboundOptionsTarget = Filters.GetSingleUnboundOptionsMetadataOrThrow(_optionsMetadata);
-                if (unboundOptionsTarget != null) {
+        void BindUnboundOptions(object target)
+        {
+            try
+            {
+                var unboundOptionsTarget = optionsMetadata.SingleOrDefault(metadata => metadata.ArgumentType == ArgumentType.Unbound);
+                if (unboundOptionsTarget != null)
                     BindUnboundOptions(unboundOptionsTarget, target);
-                }
-            } catch (ArgumentException) {
+            }
+            catch (InvalidOperationException)
+            {
                 throw new BindingException("Only one property can contain unbound options");
             }
         }
 
         //----------------------------------------------------------------------[]
-        private void BindNamedOption(OptionMetadata metadata, object target) {
+        void BindNamedOption(OptionMetadata metadata, object target)
+        {
             string rawValue = null;
             object convertedValue = null;
-            bool needConversion = true,
+            bool requiresConversion = true,
                  needBinding = true;
 
-            if (metadata.IsFlag) {
-                needConversion = false;
-                convertedValue = _args.Contains(metadata.Key.Name)
-                                 || (metadata.Key.HasAlias && _args.Contains(metadata.Key.Alias));
-            } else if (_args.Contains(metadata.Key.Name)) {
-                rawValue = _args[metadata.Key.Name];
-            } else if (metadata.Key.HasAlias && _args.Contains(metadata.Key.Alias)) {
-                rawValue = _args[metadata.Key.Alias];
-            } else if (metadata.IsRequired) {
+            string temp;
+            if (metadata.IsFlag)
+            {
+                requiresConversion = false;
+                convertedValue = args.Contains(metadata.Key.Name) || (metadata.Key.HasAlias && args.Contains(metadata.Key.Alias));
+            }
+            else if (args.TryGetNamedValue(metadata.Key.Name, out temp))
+                rawValue = temp;
+            else if (metadata.Key.HasAlias && args.TryGetNamedValue(metadata.Key.Alias, out temp))
+                rawValue = temp;
+            else if (metadata.IsRequired)
                 throw new MissingRequiredOptionException(metadata);
-            } else {
-                if (metadata.PropertyDescriptor.CanResetValue(target)) {
+            else
+            {
+                if (metadata.PropertyDescriptor.CanResetValue(target))
                     metadata.PropertyDescriptor.ResetValue(target);
-                }
-                needConversion = false;
+                requiresConversion = false;
                 needBinding = false;
             }
-
-            if (needConversion) {
+            if (requiresConversion)
                 convertedValue = ContextfulConvert(rawValue, target, metadata);
-            }
-
-            if (needBinding) {
+            if (needBinding)
                 metadata.PropertyDescriptor.SetValue(target, convertedValue);
-            }
         }
 
         //----------------------------------------------------------------------[]
-        private void BindPositionalOption(OptionMetadata metadata, object target) {
-            bool needConversion = true,
-                 needBinding = true;
+        void BindPositionalOption(OptionMetadata metadata, object target)
+        {
+            bool requiresConversion = true,
+                 requiresBinding = true;
             string rawValue = null;
             object convertedValue = null;
 
-            PropertyDescriptor descriptor = metadata.PropertyDescriptor;
-
-            if (metadata.Position >= _args.Args.Count) {
+            var descriptor = metadata.PropertyDescriptor;
+            if (metadata.Position >= args.Args.Count)
+            {
                 //Невозможно привязать обязательный позиционный аргумент
-                if (metadata.IsRequired) {
+                if (metadata.IsRequired)
                     throw new PositionalBindingException(metadata.Position);
-                }
-
                 //Если он необязательный, то можно использовать значение по умолчанию
-                if (descriptor.CanResetValue(target)) {
+                if (descriptor.CanResetValue(target))
                     descriptor.ResetValue(target);
-                }
-                needBinding =
-                    needConversion = false;
-            } else {
-                rawValue = _args.Args[metadata.Position];
-                _boundFreeArgsPositions.Add(metadata.Position);
+                requiresBinding = requiresConversion = false;
             }
-
-            if (needConversion) {
+            else
+            {
+                rawValue = args.Args[metadata.Position];
+                boundFreeArgsPositions.Add(metadata.Position);
+            }
+            if (requiresConversion)
                 convertedValue = ContextfulConvert(rawValue, target, metadata);
-            }
-
-            if (needBinding) {
+            if (requiresBinding)
                 descriptor.SetValue(target, convertedValue);
-            }
         }
 
         //----------------------------------------------------------------------[]
-        private void BindUnboundOptions(OptionMetadata metadata, object target) {
-            List<string> unboundArgs = new List<string>();
+        void BindUnboundOptions(OptionMetadata metadata, object target)
+        {
+            var unboundArgs = new List<string>();
+            for (int i = 0; i < args.Args.Count; i++)
+                if (!boundFreeArgsPositions.Contains(i))
+                    unboundArgs.Add(args.Args[i]);
 
-            for (int i = 0; i < _args.Args.Count; i++) {
-                if (!_boundFreeArgsPositions.Contains(i)) {
-                    unboundArgs.Add(_args.Args[i]);
-                }
-            }
-
-            PropertyDescriptor descriptor = metadata.PropertyDescriptor;
-            if (descriptor.PropertyType.IsArray) {
+            var descriptor = metadata.PropertyDescriptor;
+            if (descriptor.PropertyType.IsArray)
                 descriptor.SetValue(target, unboundArgs.ToArray());
-            } else {
-                IList list = Activator.CreateInstance(descriptor.PropertyType) as IList;
-                foreach (string arg in unboundArgs) {
+            else
+            {
+                var list = Activator.CreateInstance(descriptor.PropertyType) as IList;
+                foreach (string arg in unboundArgs)
                     list.Add(arg);
-                }
                 descriptor.SetValue(target, list);
             }
         }
 
-        //----------------------------------------------------------------------[]
-        private static object ContextfulConvert(string text, object instance, OptionMetadata metadata) {
-            BindingContext context = new BindingContext(instance, metadata);
-            return metadata
-                .PropertyDescriptor
-                .Converter
-                .ConvertFromString(context, CultureInfo.InvariantCulture, text);
+        static object ContextfulConvert(string text, object instance, OptionMetadata metadata)
+        {
+            var context = new BindingContext(instance, metadata);
+            return metadata.PropertyDescriptor.Converter.ConvertFromString(context, CultureInfo.InvariantCulture, text);
         }
-        #endregion
 
-        #region Static
-
-        public static TOptions BindTo<TOptions>(string[] args) where TOptions : new() {
-            ArgumentParser parser = new ArgumentParser();
+        public static TOptions BindTo<TOptions>(string[] args) where TOptions : new()
+        {
+            var parser = new ArgumentParser();
             return BindTo<TOptions>(parser.Parse(args));
         }
 
         //----------------------------------------------------------------------[]
-        public static TOptions BindTo<TOptions>(CmdArgs args) where TOptions : new() {
-            OptionsBinder binder = new OptionsBinder(args);
+        public static TOptions BindTo<TOptions>(CmdArgs args) where TOptions : new()
+        {
+            var binder = new OptionsBinder(args);
             return binder.Bind<TOptions>();
         }
-
-        #endregion
     }
 }

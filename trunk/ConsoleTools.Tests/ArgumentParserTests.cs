@@ -2,28 +2,27 @@ using NUnit.Framework;
 
 
 namespace ConsoleTools.Tests {
+
+    /// <summary>
+    /// Тесты для <see cref="ArgumentParser"/>.
+    /// </summary>
     [TestFixture]
     public class ArgumentParserTests {
-        #region Methods
-
         [Test]
         public void PropertiesWithSpecifiedPrefixesShouldBeParsedAsNamedArguments() {
-            string[] prefixes = new string[] {"-D","--"};
-            char[] separators = new char[] {'=', ':'};
-            string[] args = new string[] {
+            var prefixes = new[] {"-D","--"};
+            var separators = new[] {'=', ':'};
+            var args = new[] {
                 "-Dvalue1=something",
                 "-Dvalue2:alpha",
                 "--value3=17",
                 "--value4"
             };
 
-
-            ArgumentParser parser = new ArgumentParser();
-            parser.ArgumentPrefixes = prefixes;
-            parser.Separators = separators;
+            var parser = new ArgumentParser(prefixes, separators);
             parser.Parse(args);
 
-            CmdArgs result = parser.Parse(args);
+            var result = parser.Parse(args);
 
             AssertNamedArgument(result, "value1", "something");
             AssertNamedArgument(result, "value2", "alpha");
@@ -33,19 +32,19 @@ namespace ConsoleTools.Tests {
 
         //----------------------------------------------------------------------[]
         [Test]
-        public void PropertiesWithNoPrefixesShouldBeParsedAsDefaultArguments() {
-            string[] prefixes = new string[] {"--" };
-            char[] separators = new char[] {'='};
-            string[] args = new string[] {
-                "--value1=17",
-                "value2",
-                "value3"
-            };
+        public void PropertiesWithNoPrefixesShouldBeParsedAsDefaultArguments()
+        {
+            var prefixes = new[] {"--"};
+            var separators = new[] {'='};
+            var args = new[]
+                           {
+                               "--value1=17",
+                               "value2",
+                               "value3"
+                           };
 
-            ArgumentParser parser = new ArgumentParser();
-            parser.ArgumentPrefixes = prefixes;
-            parser.Separators = separators;
-            CmdArgs result = parser.Parse(args);
+            var parser = new ArgumentParser(prefixes,separators);
+            var result = parser.Parse(args);
 
             Assert.AreEqual(2, result.Args.Count);
             Assert.Contains("value2", result.Args);
@@ -54,20 +53,18 @@ namespace ConsoleTools.Tests {
 
         //----------------------------------------------------------------------[]
         [Test]
-        public void ParsingNoArgumentsShouldNotFail() {
-            ArgumentParser parser = new ArgumentParser();
+        public void ParsingNoArgumentsShouldNotFail()
+        {
+            var parser = new ArgumentParser();
             parser.Parse(new string[0]);
         }
 
-        #endregion
-
-        #region Routines
-
-        private static void AssertNamedArgument(CmdArgs args, string paramName, string value) {
+        private static void AssertNamedArgument(CmdArgs args, string paramName, string value)
+        {
+            string temp;
+            Assert.IsTrue(args.TryGetNamedValue(paramName, out temp));
             Assert.IsTrue(args.Contains(paramName));
-            Assert.IsTrue(args[paramName] == value);
+            Assert.AreEqual(value, temp);
         }
-
-        #endregion
     }
 }

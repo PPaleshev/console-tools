@@ -5,31 +5,19 @@ using ConsoleTools.Utils;
 
 namespace ConsoleTools.Binding {
     internal class BindingContext : ITypeDescriptorContext {
-        #region Data
 
         private readonly object _instance;
         private readonly PropertyDescriptor _descriptor;
-
-        #endregion
-
-        #region Construction
 
         public BindingContext(object instance, OptionMetadata metadata) {
             _instance = instance;
             _descriptor = metadata.PropertyDescriptor;
         }
 
-        #endregion
-
-        #region Implementation of IServiceProvider
 
         object IServiceProvider.GetService(Type serviceType) {
             throw new NotSupportedException();
         }
-
-        #endregion
-
-        #region Implementation of ITypeDescriptorContext
 
         bool ITypeDescriptorContext.OnComponentChanging() {
             throw new NotSupportedException();
@@ -54,7 +42,5 @@ namespace ConsoleTools.Binding {
         PropertyDescriptor ITypeDescriptorContext.PropertyDescriptor {
             get { return _descriptor; }
         }
-
-        #endregion
     }
 }

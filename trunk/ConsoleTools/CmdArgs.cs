@@ -1,64 +1,94 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-
 namespace ConsoleTools {
-    public class CmdArgs {
-        #region Data
 
-        private readonly IDictionary<string, string> _namedArgs = new Dictionary<string, string>();
-        private readonly IList<string> _defaultArgs = new List<string>();
+    /// <summary>
+    /// Промежуточное представление разобранных аргументов командной строки.
+    /// </summary>
+    public class CmdArgs
+    {
+        /// <summary>
+        /// Словарь именованных аргументов.
+        /// Представлен отображением названия аргумента в его значение.
+        /// </summary>
+        readonly IDictionary<string, string> namedArgs;
 
-        #endregion
+        /// <summary>
+        /// Список непривязанных аргументов в порядке их появления в списке аргументов.
+        /// </summary>
+        readonly IList<string> unboundArgs = new List<string>();
 
-        #region Properties
-
+        /// <summary>
+        /// Коллекция неименованных аргументов в порядке их появления в списке аргументов.
+        /// </summary>
         public ReadOnlyCollection<string> Args {
-            get { return new ReadOnlyCollection<string>(_defaultArgs); }
+            get { return new ReadOnlyCollection<string>(unboundArgs); }
         }
 
-        //----------------------------------------------------------------------[]
-        public string this[string name] {
-            get { return _namedArgs[name]; }
+        /// <summary>
+        /// Создаёт новый экземпляр класса для представления разобранных аргументов.
+        /// </summary>
+        /// <param name="namedArgs">Отображение из имени параметра в его значение.</param>
+        /// <param name="unboundArgs">Список непривязанных аргументов.</param>
+        public CmdArgs(IDictionary<string, string> namedArgs, IList<string> unboundArgs)
+        {
+            this.namedArgs = namedArgs ?? new Dictionary<string, string>();
+            this.unboundArgs = unboundArgs ?? new ReadOnlyCollection<string>(new string[0]);
         }
 
-        #endregion
-
-        #region Construction
-
-        public CmdArgs(IDictionary<string, string> namedArgs, IList<string> defaultArgs) {
-            _namedArgs = namedArgs ?? _namedArgs;
-            _defaultArgs = defaultArgs ?? _defaultArgs;
-        }
-
-        //----------------------------------------------------------------------[]
+        /// <summary>
+        /// Создаёт пустой экземпляр для представления разобранных аргументов.
+        /// </summary>
         public CmdArgs() {
         }
 
-        #endregion
-
-        #region Methods
-
+        /// <summary>
+        /// Добавляет значение именованного аргумента.
+        /// </summary>
+        /// <param name="name">Название аргумента.</param>
+        /// <param name="value">Значение аргумента.</param>
         public void AddNamedArg(string name, string value) {
-            _namedArgs[name] = value;
+            namedArgs[name] = value;
         }
 
         //----------------------------------------------------------------------[]
-        public void AddDefaultArg(string arg) {
-            _defaultArgs.Add(arg);
+        /// <summary>
+        /// Добавляет несвязанный аргумент.
+        /// </summary>
+        /// <param name="arg">Значение несвязанного аргумента.</param>
+        public void AddUnboundArg(string arg) {
+            unboundArgs.Add(arg);
         }
 
         //----------------------------------------------------------------------[]
+        /// <summary>
+        /// Очищает списки аргументов.
+        /// </summary>
         public void Clear() {
-            _namedArgs.Clear();
-            _defaultArgs.Clear();
+            namedArgs.Clear();
+            unboundArgs.Clear();
         }
 
         //----------------------------------------------------------------------[]
+        /// <summary>
+        /// Определяет, есть ли аргумент с указанным именем в списке именованных аргументов.
+        /// </summary>
+        /// <param name="name">Имя аргумента.</param>
+        /// <returns>Возвращает true, если аргумент есть среди именованных аргументов, иначе false.</returns>
         public bool Contains(string name) {
-            return _namedArgs.ContainsKey(name);
+            return namedArgs.ContainsKey(name);
         }
 
-        #endregion
+        /// <summary>
+        /// Пытается вернуть значение по его имени.
+        /// </summary>
+        /// <param name="name">Имя параметра.</param>
+        /// <param name="value">Значение параметра.</param>
+        /// <returns>Возвращает true, если значение параметра с указанным именем существует, иначе false.</returns>
+        public bool TryGetNamedValue(string name, out string value)
+        {
+            return namedArgs.TryGetValue(name, out value);
+        }
     }
 }
