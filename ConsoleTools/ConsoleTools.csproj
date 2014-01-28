@@ -43,26 +43,26 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArgumentParser.cs" />
-    <Compile Include="Binding\ArgumentType.cs" />
+    <Compile Include="Binding\OptionType.cs" />
     <Compile Include="Binding\BindingContext.cs" />
-    <Compile Include="Binding\PositionalOption.cs" />
+    <Compile Include="Binding\PositionalOptionAttribute.cs" />
     <Compile Include="Binding\OptionBindingAttribute.cs" />
     <Compile Include="Binding\UnboundOptionsAttribute.cs" />
     <Compile Include="CmdArgs.cs" />
-    <Compile Include="Conversion\ListItemSeparatorAttribute.cs" />
+    <Compile Include="Conversion\CollectionItemSeparatorAttribute.cs" />
     <Compile Include="Conversion\ValueListConverter.cs" />
     <Compile Include="Binding\SwitchAttribute.cs" />
     <Compile Include="Binding\NamedOptionAttribute.cs" />
     <Compile Include="Exceptions\BindingException.cs" />
     <Compile Include="Exceptions\MissingRequiredOptionException.cs" />
-    <Compile Include="Utils\OptionMetadata.cs" />
+    <Compile Include="Binding\OptionMetadata.cs" />
     <Compile Include="OptionsBinder.cs" />
     <Compile Include="Exceptions\PositionalBindingException.cs" />
     <Compile Include="Binding\OptionKey.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UsagePrinter.cs" />
-    <Compile Include="Utils\Filters.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

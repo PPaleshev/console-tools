@@ -1,41 +1,44 @@
 using System;
-using ConsoleTools.Utils;
-
 
 namespace ConsoleTools.Binding {
+    /// <summary>
+    /// Базовый атрибут для всех атрибутов, контролирующих способ связывания аргументов.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-    public abstract class OptionBindingAttribute : Attribute {
-        #region Data
-
-        private readonly bool _isRequired;
-        private object _defaultValue;
-
-        #endregion
-
-        #region Properties
-
-        //----------------------------------------------------------------------[]
+    public abstract class OptionBindingAttribute : Attribute
+    {
         /// <summary>
-        /// Обязательность аргумента
+        /// Флаг, равный true, если значение обязательно для заполнения.
         /// </summary>
-        public bool IsRequired {
-            get { return _isRequired; }
+        readonly bool isRequired;
+
+        /// <summary>
+        /// Значение по умолчанию.
+        /// </summary>
+        object defaultValue;
+
+        /// <summary>
+        /// Флаг, равный true, если значение свойства должно быть обязательно указано, иначе false.
+        /// </summary>
+        public bool IsRequired
+        {
+            get { return isRequired; }
         }
 
-        #endregion
 
-        #region Construction
-
-        protected OptionBindingAttribute(bool isRequired) {
-            _isRequired = isRequired;
+        /// <summary>
+        /// Создаёт новый экземпляр атрибута.
+        /// </summary>
+        /// <param name="isRequired">Флаг, равный true, если значение свойства должно быть обязательно указано, иначе false.</param>
+        protected OptionBindingAttribute(bool isRequired)
+        {
+            this.isRequired = isRequired;
         }
 
-        #endregion
-
-        #region Methods
-
+        /// <summary>
+        /// Реализованный в потомках, заполняет метаданные специфичными параметрами.
+        /// </summary>
+        /// <param name="metadata">Метаданные свойства.</param>
         public abstract void FillMetadata(OptionMetadata metadata);
-
-        #endregion
     }
 }

@@ -1,5 +1,4 @@
-using ConsoleTools.Utils;
-
+using ConsoleTools.Binding;
 
 namespace ConsoleTools.Exceptions {
     public class MissingRequiredOptionException : BindingException {
