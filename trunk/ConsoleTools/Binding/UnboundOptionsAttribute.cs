@@ -1,25 +1,24 @@
-using ConsoleTools.Utils;
+using System;
 
-
-namespace ConsoleTools.Binding {
-    public class UnboundOptionsAttribute : OptionBindingAttribute {
-        #region Construction
-
-        public UnboundOptionsAttribute(bool isRequired) : base(isRequired) {
+namespace ConsoleTools.Binding
+{
+    /// <summary>
+    /// јтрибут, которым помечаетс€ свойство, в котором будет содержатьс€ список аргументов, которые не удалось св€зать в процессе прив€зки.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    public class UnboundOptionsAttribute : OptionBindingAttribute
+    {
+        /// <summary>
+        /// —оздаЄт новый экземпл€р атрибута.
+        /// </summary>
+        public UnboundOptionsAttribute()
+            : base(false)
+        {
         }
 
-        //----------------------------------------------------------------------[]
-        public UnboundOptionsAttribute() : base(false) {
+        public override void FillMetadata(OptionMetadata metadata)
+        {
+            metadata.OptionType = OptionType.Unbound;
         }
-
-        #endregion
-
-        #region Overrides
-
-        public override void FillMetadata(OptionMetadata metadata) {
-            metadata.ArgumentType = ArgumentType.Unbound;
-        }
-
-        #endregion
     }
 }

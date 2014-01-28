@@ -9,21 +9,31 @@ namespace ConsoleTools.Tests {
         #region Methods
 
         [Test]
-        [ExpectedException(typeof (ArgumentNullException))]
-        public void OptionKeyCannotBeEmpty() {
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ParsedOptionKeyCannotBeEmpty()
+        {
             OptionKey key = "";
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void OptionKeyCannotBeEmpty()
+        {
+            var key = new OptionKey("");
         }
 
         //----------------------------------------------------------------------[]
         [Test]
-        [ExpectedException(typeof (FormatException))]
-        public void OptionKeyShouldContainNonEmptyName() {
+        [ExpectedException(typeof(FormatException))]
+        public void OptionKeyShouldContainNonEmptyName()
+        {
             OptionKey key = ";";
         }
 
         //----------------------------------------------------------------------[]
         [Test]
-        public void OptionKeyCanContainNameAndAlias() {
+        public void OptionKeyCanContainNameAndAlias()
+        {
             OptionKey key = "name;alias";
 
             Assert.AreEqual("name", key.Name);

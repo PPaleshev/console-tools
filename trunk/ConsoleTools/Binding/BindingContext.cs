@@ -1,19 +1,30 @@
 using System;
 using System.ComponentModel;
-using ConsoleTools.Utils;
-
 
 namespace ConsoleTools.Binding {
+    /// <summary>
+    /// –еализаци€ контекста св€зывани€.
+    /// </summary>
     internal class BindingContext : ITypeDescriptorContext {
+        /// <summary>
+        /// Ёкземпл€р объекта, которому принадлежат свойства.
+        /// </summary>
+        private readonly object instance;
 
-        private readonly object _instance;
-        private readonly PropertyDescriptor _descriptor;
+        /// <summary>
+        /// ƒескриптор свойства целевого объекта.
+        /// </summary>
+        private readonly PropertyDescriptor descriptor;
 
+        /// <summary>
+        /// —оздаЄт новый экземпл€р контекста св€зывани€.
+        /// </summary>
+        /// <param name="instance">Ёкземпл€р объекта, свойства которого св€зываютс€.</param>
+        /// <param name="metadata">ћетаданные опции, значение которой св€зываетс€.</param>
         public BindingContext(object instance, OptionMetadata metadata) {
-            _instance = instance;
-            _descriptor = metadata.PropertyDescriptor;
+            this.instance = instance;
+            descriptor = metadata.PropertyDescriptor;
         }
-
 
         object IServiceProvider.GetService(Type serviceType) {
             throw new NotSupportedException();
@@ -35,12 +46,12 @@ namespace ConsoleTools.Binding {
 
         //----------------------------------------------------------------------[]
         object ITypeDescriptorContext.Instance {
-            get { return _instance; }
+            get { return instance; }
         }
 
         //----------------------------------------------------------------------[]
         PropertyDescriptor ITypeDescriptorContext.PropertyDescriptor {
-            get { return _descriptor; }
+            get { return descriptor; }
         }
     }
 }

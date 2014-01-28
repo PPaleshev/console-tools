@@ -1,70 +1,49 @@
+using System;
 using ConsoleTools.Binding;
 
 
 namespace ConsoleTools.Tests.Data {
+    /// <summary>
+    /// Опции для тестирования.
+    /// </summary>
     public class SampleOptions {
-        #region Data
-
-        private string _stringValue;
-        private int? _intValue;
-        private bool? _boolValue;
-        private bool? _flagValue;
-        private string[] _unboundOptions;
-        private int? _positionalOption1;
-        private string _positionalOption2;
-
-        #endregion
-
-        #region Properties
-
         [NamedOption("stringvalue;s")]
-        public string StringValue {
-            get { return _stringValue; }
-            set { _stringValue = value; }
-        }
+        public string StringValue { get; set; }
 
         //----------------------------------------------------------------------[]
         [NamedOption("intvalue;i")]
-        public int? IntValue {
-            get { return _intValue; }
-            set { _intValue = value; }
-        }
+        public int? IntValue { get; set; }
+
+        //----------------------------------------------------------------------[]
+        [NamedOption("floatvalue;fl")]
+        public float FloatValue { get; set; }
+
+        //----------------------------------------------------------------------[]
+        [NamedOption("doublevalue;d")]
+        public double DoubleValue { get; set; }
+
+        //----------------------------------------------------------------------[]
+        [NamedOption("timespan;ts")]
+        public TimeSpan? TimeSpanValue { get; set; }
 
         //----------------------------------------------------------------------[]
         [NamedOption("boolvalue;b")]
-        public bool? BoolValue {
-            get { return _boolValue; }
-            set { _boolValue = value; }
-        }
+        public bool? BoolValue { get; set; }
 
         //----------------------------------------------------------------------[]
         [NamedOption("flagvalue;f"), Switch]
-        public bool? FlagValue {
-            get { return _flagValue; }
-            set { _flagValue = value; }
-        }
+        public bool? FlagValue { get; set; }
 
         //----------------------------------------------------------------------[]
         [UnboundOptions]
-        public string[] UnboundOptions {
-            get { return _unboundOptions; }
-            set { _unboundOptions = value; }
-        }
+        public string[] UnboundOptions { get; set; }
 
         //----------------------------------------------------------------------[]
         [PositionalOption(0)]
-        public int? PositionalOption1 {
-            get { return _positionalOption1; }
-            set { _positionalOption1 = value; }
-        }
+        public int? PositionalOption1 { get; set; }
 
         //----------------------------------------------------------------------[]
         [PositionalOption(1)]
-        public string PositionalOption2 {
-            get { return _positionalOption2; }
-            set { _positionalOption2 = value; }
-        }
-
-        #endregion
+        public string PositionalOption2 { get; set; }
     }
 }

@@ -5,95 +5,101 @@ using System.Globalization;
 
 
 namespace ConsoleTools.Conversion {
-    public class ValueListConverter : TypeConverter {
-        #region Data
+    /// <summary>
+    /// Реализация <see cref="TypeConverter"/> для преобразования списковых значений с учётом разделителей.
+    /// </summary>
+    public class ValueListConverter : TypeConverter
+    {
+        /// <summary>
+        /// Разделитель элементов списка, используемый по умолчанию.
+        /// </summary>
+        const string DefaultListItemSeparator = ",";
 
-        private const string DefaultListItemSeparator = ",";
-
-        #endregion
-
-        #region Overrides
-
-        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) {
-            if (typeof (string) == sourceType) {
-                return true;
-            }
-            return base.CanConvertFrom(context, sourceType);
+        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        {
+            return typeof(string) == sourceType || base.CanConvertFrom(context, sourceType);
         }
 
         //----------------------------------------------------------------------[]
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value) {
-            string str = (string) value;
-            string[] items = string.IsNullOrEmpty(str)
-                                 ? new string[0]
-                                 : ParsePropertyValue(context, str);
-
-            ArrayList convertedItems = ConvertItems(context, items);
-            return FormatResult(context, convertedItems);
+            var str = (string) value;
+            var items = string.IsNullOrEmpty(str) ? new string[0] : ParsePropertyValue(context, str);
+            var convertedItems = ConvertItems(context, items);
+            return CollectResult(context, convertedItems);
         }
 
-        #endregion
-
-        #region Routines
-
+        /// <summary>
+        /// Разбирает значение свойства, предположительно содержащее список значений.
+        /// </summary>
+        /// <param name="context">Контекст описания типа.</param>
+        /// <param name="value">Значение для разбора.</param>
+        /// <returns>Возвращает массив элементов, содержащихся в исходном значении.</returns>
         private static string[] ParsePropertyValue(ITypeDescriptorContext context, string value) {
-            string listItemSeparator = GetListItemSeparator(context);
-            return value.Split(new string[] {listItemSeparator}, StringSplitOptions.RemoveEmptyEntries);
+            var listItemSeparator = GetListItemSeparator(context);
+            return value.Split(new[] {listItemSeparator}, StringSplitOptions.RemoveEmptyEntries);
         }
 
         //----------------------------------------------------------------------[]
-        private static string GetListItemSeparator(ITypeDescriptorContext context) {
-            ListItemSeparatorAttribute a = context.PropertyDescriptor.Attributes[typeof (ListItemSeparatorAttribute)]
-                                           as ListItemSeparatorAttribute;
-            if (a == null || string.IsNullOrEmpty(a.Separator)) {
-                return DefaultListItemSeparator;
-            }
-            return a.Separator;
+        /// <summary>
+        /// Возвращает разделитель элементов коллекции.
+        /// </summary>
+        /// <param name="context">Контекст описания типа.</param>
+        static string GetListItemSeparator(ITypeDescriptorContext context)
+        {
+            var a = context.PropertyDescriptor.Attributes[typeof(CollectionItemSeparatorAttribute)] as CollectionItemSeparatorAttribute;
+            return a == null || string.IsNullOrEmpty(a.Separator) ? DefaultListItemSeparator : a.Separator;
         }
 
         //----------------------------------------------------------------------[]
-        private static Type GetItemType(ITypeDescriptorContext context) {
-            Type propertyType = context.PropertyDescriptor.PropertyType;
-            if (propertyType.IsArray) {
+        /// <summary>
+        /// Возвращает тип элемента коллекции.
+        /// </summary>
+        /// <param name="context">Контекст описания типа.</param>
+        private static Type GetCollectionItemType(ITypeDescriptorContext context) {
+            var propertyType = context.PropertyDescriptor.PropertyType;
+            if (propertyType.IsArray)
                 return propertyType.GetElementType();
-            }
 
-            Type genericType = propertyType.GetGenericTypeDefinition();
-            if (genericType != null && propertyType.GetGenericArguments().Length == 1) {
+            var genericType = propertyType.GetGenericTypeDefinition();
+            if (genericType != null && propertyType.GetGenericArguments().Length == 1)
                 return propertyType.GetGenericArguments()[0];
-            }
-
             return typeof (string);
         }
 
         //----------------------------------------------------------------------[]
+        /// <summary>
+        /// Выполняет преобразования строковых элементов списка в их реальный тип, определяемый свойством.
+        /// </summary>
+        /// <param name="context">Контекст преобразования.</param>
+        /// <param name="items">Список элементов коллекции.</param>
+        /// <returns>Возвращает список с реальными значениями результирующей коллекции.</returns>
         private static ArrayList ConvertItems(ITypeDescriptorContext context, string[] items) {
-            Type itemType = GetItemType(context);
-            TypeConverter converter = TypeDescriptor.GetConverter(itemType);
+            var itemType = GetCollectionItemType(context);
+            var converter = TypeDescriptor.GetConverter(itemType);
 
-            ArrayList result = new ArrayList(items.Length);
-            for (int i = 0; i < items.Length; i++) {
-                result.Add(converter.CanConvertFrom(context, typeof (string))
-                               ? converter.ConvertFromString(items[i])
-                               : items[i]);
-            }
+            var result = new ArrayList(items.Length);
+            foreach (string t in items)
+                result.Add(converter.CanConvertFrom(context, typeof(string)) ? converter.ConvertFromString(t) : t);
             return result;
         }
 
         //----------------------------------------------------------------------[]
-        private static object FormatResult(ITypeDescriptorContext context, ArrayList result) {
-            Type propertyType = context.PropertyDescriptor.PropertyType;
-            if (propertyType.IsArray) {
-                return result.ToArray(propertyType.GetElementType());
-            }
+        /// <summary>
+        /// Собирает элементы <paramref name="items"/> в массив или другой тип коллекции в зависимости от типа свойства.
+        /// </summary>
+        /// <param name="context">Контекст преобразования свойства.</param>
+        /// <param name="items">Элементы списка.</param>
+        /// <returns>Возвращает соответствующую коллекцию, содержащую элементы списка.</returns>
+        private static object CollectResult(ITypeDescriptorContext context, ArrayList items)
+        {
+            var propertyType = context.PropertyDescriptor.PropertyType;
+            if (propertyType.IsArray)
+                return items.ToArray(propertyType.GetElementType());
 
-            IList collection = (IList) Activator.CreateInstance(propertyType);
-            foreach (object o in result) {
+            var collection = (IList)Activator.CreateInstance(propertyType);
+            foreach (var o in items)
                 collection.Add(o);
-            }
             return collection;
         }
-
-        #endregion
     }
 }

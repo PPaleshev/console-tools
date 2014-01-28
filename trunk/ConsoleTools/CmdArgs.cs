@@ -41,6 +41,8 @@ namespace ConsoleTools {
         /// Создаёт пустой экземпляр для представления разобранных аргументов.
         /// </summary>
         public CmdArgs() {
+            namedArgs = new Dictionary<string, string>();
+            unboundArgs = new List<string>();
         }
 
         /// <summary>

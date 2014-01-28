@@ -3,29 +3,15 @@ using ConsoleTools.Binding;
 
 
 namespace ConsoleTools.Tests.Data {
-    public class MandatoryOptions {
-        #region Data
-
-        private string _requiredValue,
-                       _optionalValue;
-        #endregion
-
-        #region Properties
-
+    /// <summary>
+    /// Класс для проверки привязки обязательных и необязательных параметров.
+    /// </summary>
+    public class MandatoryOptions
+    {
         [NamedOption("required;r", true)]
-        public string RequiredValue {
-            get { return _requiredValue; }
-            set { _requiredValue = value; }
-        }
+        public string RequiredValue { get; set; }
 
-        //----------------------------------------------------------------------[]
-        [NamedOption("optional;o")]
-        [DefaultValue("bazzinga")]
-        public string OptionalValue {
-            get { return _optionalValue; }
-            set { _optionalValue = value; }
-        }
-
-        #endregion
+        [NamedOption("optional;o"), DefaultValue("bazzinga")]
+        public string OptionalValue { get; set; }
     }
 }

@@ -1,44 +1,32 @@
-using ConsoleTools.Utils;
-
+using System;
 
 namespace ConsoleTools.Binding {
-    public class NamedOptionAttribute : OptionBindingAttribute {
-        #region Data
-
-        private readonly OptionKey _key;
-
-        #endregion
-
-        #region Properties
+    /// <summary>
+    /// Атрибут, которым помечаются свойства объекты, которые должны быть связаны с именованными аргументами.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
+    public class NamedOptionAttribute : OptionBindingAttribute
+    {
+        /// <summary>
+        /// Ключ аргумента, по которому выполняется связывание.
+        /// </summary>
+        readonly OptionKey key;
 
         /// <summary>
-        /// Ключ аргумента
+        /// Создаёт новый экземпляр атрибута для разметки именованных аргументов.
         /// </summary>
-        public OptionKey Key {
-            get { return _key; }
+        /// <param name="key">Ключ для связывания аргументов со свойствами. Может быть указан в формате &lt;name&gt;[;alias].</param>
+        /// <param name="isRequired">Флаг, равный true, если свойство обязательно для заполнения, иначе false.</param>
+        public NamedOptionAttribute(string key, bool isRequired = false)
+            : base(isRequired)
+        {
+            this.key = key;
         }
 
-        #endregion
-
-        #region Construction
-
-        public NamedOptionAttribute(string key, bool isRequired) : base(isRequired) {
-            _key = key;
+        public override void FillMetadata(OptionMetadata metadata)
+        {
+            metadata.Key = key;
+            metadata.OptionType = OptionType.Named;
         }
-
-        //----------------------------------------------------------------------[]
-        public NamedOptionAttribute(string key) : this(key, false) {
-        }
-
-        #endregion
-
-        #region Overrides
-
-        public override void FillMetadata(OptionMetadata metadata) {
-            metadata.Key = _key;
-            metadata.ArgumentType = ArgumentType.Named;
-        }
-
-        #endregion
     }
 }

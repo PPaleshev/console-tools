@@ -40,7 +40,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArgumentParserTests.cs" />
-    <Compile Include="Class1.cs" />
     <Compile Include="ConversionTests.cs" />
     <Compile Include="Data\ListOptions.cs" />
     <Compile Include="Data\OptionsWithTwoUnboundOptionsProperties.cs" />
