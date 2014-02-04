@@ -189,7 +189,7 @@ namespace ConsoleTools {
             object convertedValue = null;
 
             var descriptor = metadata.PropertyDescriptor;
-            if (metadata.Position >= args.Args.Count)
+            if (metadata.Position >= args.UnboundValues.Count)
             {
                 //Невозможно привязать обязательный позиционный аргумент
                 if (metadata.IsRequired)
@@ -201,7 +201,7 @@ namespace ConsoleTools {
             }
             else
             {
-                rawValue = args.Args[metadata.Position];
+                rawValue = args.UnboundValues[metadata.Position];
                 boundFreeArgsPositions.Add(metadata.Position);
             }
             if (requiresConversion)
@@ -219,9 +219,9 @@ namespace ConsoleTools {
         void BindUnboundOptions(OptionMetadata metadata, object target)
         {
             var unboundArgs = new List<string>();
-            for (int i = 0; i < args.Args.Count; i++)
+            for (int i = 0; i < args.UnboundValues.Count; i++)
                 if (!boundFreeArgsPositions.Contains(i))
-                    unboundArgs.Add(args.Args[i]);
+                    unboundArgs.Add(args.UnboundValues[i]);
             var descriptor = metadata.PropertyDescriptor;
             if (descriptor.PropertyType.IsArray)
                 descriptor.SetValue(target, unboundArgs.ToArray());
