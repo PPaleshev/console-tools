@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArgumentParser.cs" />
+    <Compile Include="Binding\NamedArgumentsParsingAttribute.cs" />
     <Compile Include="Binding\OptionType.cs" />
     <Compile Include="Binding\BindingContext.cs" />
     <Compile Include="Binding\PositionalOptionAttribute.cs" />

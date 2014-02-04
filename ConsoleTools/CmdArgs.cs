@@ -22,7 +22,7 @@ namespace ConsoleTools {
         /// <summary>
         /// Коллекция неименованных аргументов в порядке их появления в списке аргументов.
         /// </summary>
-        public ReadOnlyCollection<string> Args {
+        public ReadOnlyCollection<string> UnboundValues {
             get { return new ReadOnlyCollection<string>(unboundArgs); }
         }
 
