@@ -5,7 +5,7 @@ namespace ConsoleTools.Binding {
     /// јтрибут дл€ разметки позиционных аргументов.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
-    public class PositionalOptionAttribute : OptionBindingAttribute
+    public class PositionalAttribute : ModelBindingAttribute
     {
         /// <summary>
         /// Ќомер прив€зываемого атрибута.
@@ -18,7 +18,7 @@ namespace ConsoleTools.Binding {
         /// </summary>
         /// <param name="position"></param>
         /// <param name="isRequired"></param>
-        public PositionalOptionAttribute(int position, bool isRequired = false)
+        public PositionalAttribute(int position, bool isRequired = false)
             : base(isRequired)
         {
             if (position < 0)
@@ -26,9 +26,9 @@ namespace ConsoleTools.Binding {
             Position = position;
         }
 
-        public override void FillMetadata(OptionMetadata metadata)
+        public override void FillMetadata(PropertyMetadata metadata)
         {
-            metadata.OptionType = OptionType.Positional;
+            metadata.PropertyKind = Kind.Positional;
             metadata.Position = Position;
         }
     }

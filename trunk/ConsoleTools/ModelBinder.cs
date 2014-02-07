@@ -10,20 +10,15 @@ using System.Linq;
 
 namespace ConsoleTools {
     /// <summary>
-    /// Класс для осуществления привязки значений переданных аргументов значениям свойств указанной модели.
+    /// Класс для привязки значений переданных аргументов значениям свойств указанной модели.
     /// </summary>
-    public class OptionsBinder
+    public class ModelBinder
     {
         /// <summary>
         /// Объект-хранилище для переданных аргументов.
         /// </summary>
         readonly CmdArgs args;
         
-        /// <summary>
-        /// Список метаданных всех свойств модели.
-        /// </summary>
-        readonly IList<OptionMetadata> optionsMetadata = new List<OptionMetadata>();
-
         /// <summary>
         /// Список номеров позиций, для которых удалось осуществить привязку позиционных аргументов.
         /// </summary>
@@ -33,7 +28,7 @@ namespace ConsoleTools {
         /// Создаёт новый экземпляр объекта.
         /// </summary>
         /// <param name="args">Хранилище переданных аргументов.</param>
-        OptionsBinder(CmdArgs args)
+        ModelBinder(CmdArgs args)
         {
             this.args = args;
         }
@@ -41,69 +36,58 @@ namespace ConsoleTools {
         /// <summary>
         /// Выполняет привязку переданных аргументов <paramref name="args"/> к свойствам модели.
         /// </summary>
-        /// <typeparam name="TOptions">Тип модели.</typeparam>
+        /// <typeparam name="TModel">Тип модели.</typeparam>
         /// <param name="args">Переданные аргументы.</param>
-        public static TOptions BindTo<TOptions>(string[] args) where TOptions : new()
+        public static TModel BindTo<TModel>(string[] args) where TModel : new()
         {
-            var parser = new ArgumentParser();
-            return BindTo<TOptions>(parser.Parse(args));
+            var policyAttr = (NamedArgumentsPolicyAttribute)Attribute.GetCustomAttribute(typeof(TModel), typeof(NamedArgumentsPolicyAttribute));
+            var parser = policyAttr == null ? new ArgumentParser() : new ArgumentParser(new[] {policyAttr.Prefix}, new[] {policyAttr.Separator});
+            return BindTo<TModel>(parser.Parse(args));
         }
 
         //----------------------------------------------------------------------[]
         /// <summary>
         /// Выполняет привязку аргументов, находящихся в хранилище <paramref name="args"/> к свойствам модели.
         /// </summary>
-        /// <typeparam name="TOptions">Тип модели.</typeparam>
+        /// <typeparam name="TModel">Тип модели.</typeparam>
         /// <param name="args">Хранилище аргументов.</param>
-        public static TOptions BindTo<TOptions>(CmdArgs args) where TOptions : new()
+        public static TModel BindTo<TModel>(CmdArgs args) where TModel : new()
         {
-            var binder = new OptionsBinder(args);
-            return binder.Bind<TOptions>();
+            var binder = new ModelBinder(args);
+            return binder.Bind<TModel>();
         }
 
         /// <summary>
         /// Выполняет привязку аргументов к свойствам модели.
         /// </summary>
-        /// <typeparam name="TOptions">Тип модели, содержащей привязываемые свойства.</typeparam>
+        /// <typeparam name="TModel">Тип модели, содержащей привязываемые свойства.</typeparam>
         /// <returns>Возвращает объект с установленными значениями свойств.</returns>
-        TOptions Bind<TOptions>() where TOptions : new()
+        TModel Bind<TModel>() where TModel : new()
         {
-            ExtractDeclaredOptionDefinitions(typeof(TOptions));
-            var optionsObject = new TOptions();
-            BindNamedOptions(optionsObject);
-            BindPositionalOptions(optionsObject);
-            CollectUnboundOptions(optionsObject);
-            return optionsObject;
-        }
-
-        /// <summary>
-        /// Извлекает метаданные из свойств модели.
-        /// </summary>
-        /// <param name="optionsType">Тип модели.</param>
-        void ExtractDeclaredOptionDefinitions(Type optionsType)
-        {
-            var descriptors = TypeDescriptor.GetProperties(optionsType);
-            foreach (PropertyDescriptor property in descriptors)
+            var propertyMetadata = MetadataProvider.ReadPropertyMetadata(typeof(TModel));
+            var model = new TModel();
+            var propertyGroups = propertyMetadata.GroupBy(metadata => metadata.PropertyKind);
+            foreach (var propertyGroup in propertyGroups)
             {
-                var attr = (OptionBindingAttribute)property.Attributes[typeof(OptionBindingAttribute)];
-                if (attr == null)
-                    continue;
-                var metadata = new OptionMetadata(property);
-                metadata.IsRequired = attr.IsRequired;
-                metadata.IsSwitch = property.Attributes[typeof(SwitchAttribute)] != null;
-                attr.FillMetadata(metadata);
-                optionsMetadata.Add(metadata);
+                if (propertyGroup.Key == Kind.Named)
+                    BindNamedOptions(propertyGroup, model);
+                else if (propertyGroup.Key == Kind.Positional)
+                    BindPositionalOptions(propertyGroup, model);
+                else
+                    CollectUnboundOptions(propertyGroup, model);
             }
+            return model;
         }
 
         //----------------------------------------------------------------------[]
         /// <summary>
         /// Выполняет привязку именованных аргументов к свойствам объекта.
         /// </summary>
+        /// <param name="properties">Перечисление метаданных именованных свойств модели.</param>
         /// <param name="target">Целевой объект.</param>
-        void BindNamedOptions(object target)
+        void BindNamedOptions(IEnumerable<PropertyMetadata> properties, object target)
         {
-            foreach (var metadata in optionsMetadata.Where(metadata => metadata.OptionType == OptionType.Named))
+            foreach (var metadata in properties.Where(metadata => metadata.PropertyKind == Kind.Named))
                 BindNamedOption(metadata, target);
         }
 
@@ -111,10 +95,11 @@ namespace ConsoleTools {
         /// <summary>
         /// Выполняет привязку позиционных аргументов к свойствам объекта.
         /// </summary>
+        /// <param name="properties">Перечисление метаданных позиционных свойств модели.</param>
         /// <param name="target">Целевой объект.</param>
-        void BindPositionalOptions(object target)
+        void BindPositionalOptions(IEnumerable<PropertyMetadata> properties, object target)
         {
-            foreach (var metadata in optionsMetadata.Where(metadata => metadata.OptionType == OptionType.Positional))
+            foreach (var metadata in properties)
                 BindPositionalOption(metadata, target);
         }
 
@@ -122,12 +107,13 @@ namespace ConsoleTools {
         /// <summary>
         /// Собирает все непривязанные аргументы.
         /// </summary>
+        /// <param name="properties">Перечисление метаданных несвязанных свойств модели.</param>
         /// <param name="target">Целевой объект.</param>
-        void CollectUnboundOptions(object target)
+        void CollectUnboundOptions(IEnumerable<PropertyMetadata> properties, object target)
         {
             try
             {
-                var unboundOptionsTarget = optionsMetadata.SingleOrDefault(metadata => metadata.OptionType == OptionType.Unbound);
+                var unboundOptionsTarget = properties.SingleOrDefault();
                 if (unboundOptionsTarget != null)
                     BindUnboundOptions(unboundOptionsTarget, target);
             }
@@ -143,12 +129,12 @@ namespace ConsoleTools {
         /// </summary>
         /// <param name="metadata">Метаданные свойства.</param>
         /// <param name="target">Целевой объект.</param>
-        void BindNamedOption(OptionMetadata metadata, object target)
+        void BindNamedOption(PropertyMetadata metadata, object target)
         {
             string rawValue = null;
             object convertedValue = null;
             bool requiresConversion = true,
-                 needBinding = true;
+                 requiresBinding = true;
 
             string temp;
             if (metadata.IsSwitch)
@@ -167,11 +153,11 @@ namespace ConsoleTools {
                 if (metadata.PropertyDescriptor.CanResetValue(target))
                     metadata.PropertyDescriptor.ResetValue(target);
                 requiresConversion = false;
-                needBinding = false;
+                requiresBinding = false;
             }
             if (requiresConversion)
                 convertedValue = ContextfulConvert(rawValue, target, metadata);
-            if (needBinding)
+            if (requiresBinding)
                 metadata.PropertyDescriptor.SetValue(target, convertedValue);
         }
 
@@ -181,7 +167,7 @@ namespace ConsoleTools {
         /// </summary>
         /// <param name="metadata">Метаданные свойства.</param>
         /// <param name="target">Целевой объект.</param>
-        void BindPositionalOption(OptionMetadata metadata, object target)
+        void BindPositionalOption(PropertyMetadata metadata, object target)
         {
             bool requiresConversion = true,
                  requiresBinding = true;
@@ -216,7 +202,7 @@ namespace ConsoleTools {
         /// </summary>
         /// <param name="metadata">Метаданные свойства, в которое должны быть помещены все несвязанные аргументы.</param>
         /// <param name="target">Целевой объект.</param>
-        void BindUnboundOptions(OptionMetadata metadata, object target)
+        void BindUnboundOptions(PropertyMetadata metadata, object target)
         {
             var unboundArgs = new List<string>();
             for (int i = 0; i < args.UnboundValues.Count; i++)
@@ -235,13 +221,13 @@ namespace ConsoleTools {
         }
 
         /// <summary>
-        /// 
+        /// Выполняет преобразование значения свойства из строки в реальный тип свойства, используя конвертер из <see cref="PropertyDescriptor"/>.
         /// </summary>
-        /// <param name="text"></param>
-        /// <param name="instance"></param>
-        /// <param name="metadata"></param>
-        /// <returns></returns>
-        static object ContextfulConvert(string text, object instance, OptionMetadata metadata)
+        /// <param name="text">Строковое значение.</param>
+        /// <param name="instance">Экземпляр модели.</param>
+        /// <param name="metadata">Метаданные свойства.</param>
+        /// <returns>Возвращает преобразованное значение свойства.</returns>
+        static object ContextfulConvert(string text, object instance, PropertyMetadata metadata)
         {
             var context = new BindingContext(instance, metadata);
             return metadata.PropertyDescriptor.Converter.ConvertFromString(context, CultureInfo.InvariantCulture, text);

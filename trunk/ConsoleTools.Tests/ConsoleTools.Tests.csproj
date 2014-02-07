@@ -41,14 +41,15 @@
   <ItemGroup>
     <Compile Include="ArgumentParserTests.cs" />
     <Compile Include="ConversionTests.cs" />
-    <Compile Include="Data\ListOptions.cs" />
+    <Compile Include="Data\ListModel.cs" />
     <Compile Include="Data\OptionsWithTwoUnboundOptionsProperties.cs" />
-    <Compile Include="Data\MandatoryOptions.cs" />
+    <Compile Include="Data\MandatoryModel.cs" />
     <Compile Include="Data\RequiredPositionalOptions.cs" />
-    <Compile Include="Data\SampleOptions.cs" />
-    <Compile Include="OptionKeyTests.cs" />
+    <Compile Include="Data\SampleModel.cs" />
+    <Compile Include="PropertyKeyTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="OptionBindingTests.cs" />
+    <Compile Include="ModelBindingTests.cs" />
+    <Compile Include="UsagePrinterTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ConsoleTools\ConsoleTools.csproj">

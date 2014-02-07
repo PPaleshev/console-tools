@@ -43,23 +43,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArgumentParser.cs" />
-    <Compile Include="Binding\NamedArgumentsParsingAttribute.cs" />
-    <Compile Include="Binding\OptionType.cs" />
+    <Compile Include="Binding\MetadataProvider.cs" />
+    <Compile Include="Binding\NamedArgumentsPolicyAttribute.cs" />
+    <Compile Include="Binding\Kind.cs" />
     <Compile Include="Binding\BindingContext.cs" />
-    <Compile Include="Binding\PositionalOptionAttribute.cs" />
-    <Compile Include="Binding\OptionBindingAttribute.cs" />
-    <Compile Include="Binding\UnboundOptionsAttribute.cs" />
+    <Compile Include="Binding\PositionalAttribute.cs" />
+    <Compile Include="Binding\ModelBindingAttribute.cs" />
+    <Compile Include="Binding\UnboundAttribute.cs" />
     <Compile Include="CmdArgs.cs" />
     <Compile Include="Conversion\CollectionItemSeparatorAttribute.cs" />
     <Compile Include="Conversion\ValueListConverter.cs" />
     <Compile Include="Binding\SwitchAttribute.cs" />
-    <Compile Include="Binding\NamedOptionAttribute.cs" />
+    <Compile Include="Binding\NamedAttribute.cs" />
     <Compile Include="Exceptions\BindingException.cs" />
     <Compile Include="Exceptions\MissingRequiredOptionException.cs" />
-    <Compile Include="Binding\OptionMetadata.cs" />
-    <Compile Include="OptionsBinder.cs" />
+    <Compile Include="Binding\PropertyMetadata.cs" />
+    <Compile Include="ModelBinder.cs" />
     <Compile Include="Exceptions\PositionalBindingException.cs" />
-    <Compile Include="Binding\OptionKey.cs" />
+    <Compile Include="Binding\PropertyKey.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UsagePrinter.cs" />
   </ItemGroup>

@@ -5,14 +5,14 @@ namespace ConsoleTools.Tests.Data {
     public class OptionsWithTwoUnboundOptionsProperties {
         #region Properties
  
-        [UnboundOptions]
+        [Unbound]
         public string DefaultOption1 {
             get { return null; }
             set {}
         }
 
         //----------------------------------------------------------------------[]
-        [UnboundOptions]
+        [Unbound]
         public string DefaultOption2 {
             get { return null;}
             set{ }

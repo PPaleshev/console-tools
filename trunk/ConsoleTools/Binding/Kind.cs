@@ -2,7 +2,7 @@ namespace ConsoleTools.Binding {
     /// <summary>
     /// ѕеречисление, определ€ющее тип аргумента.
     /// </summary>
-    public enum OptionType {
+    public enum Kind {
         /// <summary>
         /// —вободный аргумент.
         /// </summary>

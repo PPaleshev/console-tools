@@ -11,7 +11,7 @@ namespace ConsoleTools.Tests {
     /// Тесты проверки связывания аргументов.
     /// </summary>
     [TestFixture]
-    public class OptionBindingTests
+    public class ModelBindingTests
     {
         /// <summary>
         /// Парсер аргументов.
@@ -30,7 +30,7 @@ namespace ConsoleTools.Tests {
         [Test]
         public void TestArgumentBindingByName()
         {
-            var options = ParseAndBindTo<SampleOptions>("/stringvalue=123456");
+            var options = ParseAndBindTo<SampleModel>("/stringvalue=123456");
 
             Assert.AreEqual("123456", options.StringValue);
             Assert.IsFalse(options.IntValue.HasValue);
@@ -44,7 +44,7 @@ namespace ConsoleTools.Tests {
         [Test]
         public void TestArgumentBindingByAlias()
         {
-            var options = ParseAndBindTo<SampleOptions>("/s=123456");
+            var options = ParseAndBindTo<SampleModel>("/s=123456");
 
             Assert.AreEqual("123456", options.StringValue);
             Assert.IsFalse(options.IntValue.HasValue);
@@ -58,7 +58,7 @@ namespace ConsoleTools.Tests {
         [Test]
         public void TestSwitchBinding()
         {
-            var options = ParseAndBindTo<SampleOptions>("/flagvalue");
+            var options = ParseAndBindTo<SampleModel>("/flagvalue");
             Assert.IsTrue(options.FlagValue.HasValue);
             Assert.IsTrue(options.FlagValue.Value);
         }
@@ -69,7 +69,7 @@ namespace ConsoleTools.Tests {
         /// </summary>
         [Test]
         public void TestSwitchPropertyAlwaysHasTrueOrFalseValue() {
-            var options = ParseAndBindTo<SampleOptions>();
+            var options = ParseAndBindTo<SampleModel>();
 
             Assert.IsTrue(options.FlagValue.HasValue);
             Assert.IsFalse(options.FlagValue.Value);
@@ -82,7 +82,7 @@ namespace ConsoleTools.Tests {
         [Test]
         public void TestPositionalOptionBinding()
         {
-            var options = ParseAndBindTo<SampleOptions>("72", "some unbound option", "extra option");
+            var options = ParseAndBindTo<SampleModel>("72", "some unbound option", "extra option");
 
             Assert.IsTrue(options.PositionalOption1.HasValue);
             Assert.AreEqual(72, options.PositionalOption1);
@@ -108,7 +108,7 @@ namespace ConsoleTools.Tests {
         [Test]
         public void TestUnboundOptionsBinding()
         {
-            var options = ParseAndBindTo<SampleOptions>("1", "posOpt2", "unbound option 1", "unbound option 2");
+            var options = ParseAndBindTo<SampleModel>("1", "posOpt2", "unbound option 1", "unbound option 2");
             Assert.IsNotNull(options.UnboundOptions, "Unbound options are null");
             Assert.AreEqual(2, options.UnboundOptions.Length);
             Assert.AreEqual("unbound option 1", options.UnboundOptions[0]);
@@ -122,7 +122,7 @@ namespace ConsoleTools.Tests {
         [Test]
         public void TestArgumentValueDefaultConversion()
         {
-            var options = ParseAndBindTo<SampleOptions>("/intvalue=37", "/boolvalue=true", "/floatvalue=2.2", "/doublevalue=729237.188", "/timespan=00:05:00");
+            var options = ParseAndBindTo<SampleModel>("/intvalue=37", "/boolvalue=true", "/floatvalue=2.2", "/doublevalue=729237.188", "/timespan=00:05:00");
 
             Assert.IsTrue(options.IntValue.HasValue);
             Assert.AreEqual(37, options.IntValue);
@@ -141,15 +141,15 @@ namespace ConsoleTools.Tests {
         [Test]
         [ExpectedException(typeof (MissingRequiredOptionException))]
         public void TestMissingRequiredArgumentThrowsException() {
-            ParseAndBindTo<MandatoryOptions>();
+            ParseAndBindTo<MandatoryModel>();
         }
 
         //----------------------------------------------------------------------[]
         /// <summary>
-        /// Проверяет, что при наличии более одного свойства, отмеченного <see cref="UnboundOptionsAttribute"/>, выбрасывается исключение.
+        /// Проверяет, что при наличии более одного свойства, отмеченного <see cref="UnboundAttribute"/>, выбрасывается исключение.
         /// </summary>
         [Test]
-        [ExpectedException(typeof (BindingException), "Only one property can contain unbound options")]
+        [ExpectedException(typeof (BindingException))]
         public void TestOptionsObjectCanContainOnlyOnePropertyToBindUnboundArguments() {
             ParseAndBindTo<OptionsWithTwoUnboundOptionsProperties>("a", "b");
         }
@@ -160,7 +160,7 @@ namespace ConsoleTools.Tests {
         /// </summary>
         [Test]
         public void TestMissingOptionalAttributeDefaultValue() {
-            var opt = ParseAndBindTo<MandatoryOptions>("/required=1");
+            var opt = ParseAndBindTo<MandatoryModel>("/required=1");
             Assert.AreEqual("bazzinga", opt.OptionalValue);
         }
 
@@ -170,7 +170,7 @@ namespace ConsoleTools.Tests {
         /// </summary>
         [Test]
         public void TestDefaultListBindingWithoutConversion() {
-            var opts = ParseAndBindTo<ListOptions>("/default=1,2,3,4");
+            var opts = ParseAndBindTo<ListModel>("/default=1,2,3,4");
 
             Assert.IsNotNull(opts);
             Assert.IsNotNull(opts.Default);
@@ -188,7 +188,7 @@ namespace ConsoleTools.Tests {
         [Test]
         public void TestEmptyListBinding()
         {
-            var opts = ParseAndBindTo<ListOptions>("/default=");
+            var opts = ParseAndBindTo<ListModel>("/default=");
             Assert.IsNotNull(opts);
             Assert.IsNotNull(opts.Default);
             Assert.AreEqual(0, opts.Default.Length);
@@ -200,7 +200,7 @@ namespace ConsoleTools.Tests {
         /// </summary>
         [Test]
         public void TestListBindingWithArrayConversion() {
-            var opts = ParseAndBindTo<ListOptions>("/default=foo, bar, bazz");
+            var opts = ParseAndBindTo<ListModel>("/default=foo, bar, bazz");
 
             Assert.IsNotNull(opts);
             Assert.IsNotNull(opts.Default);
@@ -217,7 +217,7 @@ namespace ConsoleTools.Tests {
         [Test]
         public void TestListBindingWithGenericListConversion()
         {
-            var opts = ParseAndBindTo<ListOptions>("/list=1,2,-9,4");
+            var opts = ParseAndBindTo<ListModel>("/list=1,2,-9,4");
 
             Assert.IsNotNull(opts);
             Assert.IsNotNull(opts.IntList);
@@ -234,7 +234,7 @@ namespace ConsoleTools.Tests {
         /// </summary>
         [Test]
         public void TestListPositionalBindingWithConversion() {
-            var opts = ParseAndBindTo<ListOptions>("true,false,false,true");
+            var opts = ParseAndBindTo<ListModel>("true,false,false,true");
 
             Assert.IsNotNull(opts);
             Assert.IsNotNull(opts.Positional);
@@ -251,7 +251,7 @@ namespace ConsoleTools.Tests {
         /// </summary>
         [Test]
         public void TestListBindingWithSpecifiedSeparator() {
-            var options = ParseAndBindTo<ListOptions>("/separated=1_2_221_-7");   
+            var options = ParseAndBindTo<ListModel>("/separated=1_2_221_-7");   
             
             Assert.IsNotNull(options);
             Assert.IsNotNull(options.SeparatedList);
@@ -269,7 +269,7 @@ namespace ConsoleTools.Tests {
         /// <param name="args">Массив переданных аргументов.</param>
         private TOptions ParseAndBindTo<TOptions>(params string[] args) where TOptions : new() {
             var cmdargs = parser.Parse(args);
-            return OptionsBinder.BindTo<TOptions>(cmdargs);
+            return ModelBinder.BindTo<TOptions>(cmdargs);
         }
     }
 }
