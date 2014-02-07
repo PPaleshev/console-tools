@@ -5,7 +5,7 @@ namespace ConsoleTools.Binding {
     /// <summary>
     /// Ключ опции. Включает в себя полное название опции и его псевдоним.
     /// </summary>
-    public struct OptionKey
+    public struct PropertyKey
     {
         /// <summary>
         /// Название опции. Обязательно для заполнения.
@@ -30,7 +30,7 @@ namespace ConsoleTools.Binding {
         /// </summary>
         /// <param name="name">Название опции.</param>
         /// <param name="alias">Псевдоним опции (краткое наименование).</param>
-        public OptionKey(string name, string alias)
+        public PropertyKey(string name, string alias)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException("name");
@@ -43,7 +43,7 @@ namespace ConsoleTools.Binding {
         /// Создаёт новый экземпляр структуры без краткого названия.
         /// </summary>
         /// <param name="name">Наименование опции.</param>
-        public OptionKey(string name)
+        public PropertyKey(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException("name");
@@ -56,13 +56,13 @@ namespace ConsoleTools.Binding {
         /// </summary>
         /// <param name="value">Строка в формате {name}[;{alias}], где name - обязательное имя свойства, а alias - опциональный псевдоним.</param>
         /// <returns>Возвращает новый экземпляр ключа опции.</returns>
-        public static implicit operator OptionKey(string value) {
+        public static implicit operator PropertyKey(string value) {
             if (string.IsNullOrEmpty(value))
                 throw new ArgumentNullException("value");
             var values = value.Split(new[] {";"}, StringSplitOptions.RemoveEmptyEntries);
             if (values.Length < 1 || values.Length > 2)
                 throw new FormatException("Invalid value format. Expected '<name>[;alias]' format");
-            return values.Length == 2 ? new OptionKey(values[0], values[1]) : new OptionKey(values[0]);
+            return values.Length == 2 ? new PropertyKey(values[0], values[1]) : new PropertyKey(values[0]);
         }
 
         //----------------------------------------------------------------------[]

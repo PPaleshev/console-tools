@@ -8,23 +8,23 @@ namespace ConsoleTools.Tests.Data
     /// <summary>
     /// Опции для проверки привязки списков.
     /// </summary>
-    public class ListOptions
+    public class ListModel
     {
-        [NamedOption("default;d")]
+        [Named("default;d")]
         [TypeConverter(typeof(ValueListConverter))]
         public string[] Default { get; set; }
 
+        [Named("list")]
         [TypeConverter(typeof(ValueListConverter))]
-        [NamedOption("list")]
         public List<int> IntList { get; set; }
 
         [TypeConverter(typeof(ValueListConverter))]
-        [PositionalOption(0)]
+        [Positional(0)]
         public bool[] Positional { get; set; }
 
-        [NamedOption("separated")]
-        [TypeConverter(typeof(ValueListConverter))]
+        [Named("separated")]
         [CollectionItemSeparator("_")]
+        [TypeConverter(typeof(ValueListConverter))]
         public List<int> SeparatedList { get; set; }
     }
 }

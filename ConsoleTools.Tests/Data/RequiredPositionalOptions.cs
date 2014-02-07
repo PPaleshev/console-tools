@@ -11,7 +11,7 @@ namespace ConsoleTools.Tests.Data {
 
         #region Properties
 
-        [PositionalOption(0, true)]
+        [Positional(0, true)]
         public string Value {
             get { return _value; }
             set { _value = value; }

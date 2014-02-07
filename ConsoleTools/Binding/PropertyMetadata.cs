@@ -4,11 +4,11 @@ namespace ConsoleTools.Binding {
     /// <summary>
     ///  ласс, представл€ющий собой метаданные, необходимые в процессе св€зывани€ значени€.
     /// </summary>
-    public class OptionMetadata {
+    public class PropertyMetadata {
         /// <summary>
         ///  люч опции.
         /// </summary>
-        public OptionKey Key { get; set; }
+        public PropertyKey Key { get; set; }
 
         //----------------------------------------------------------------------[]
         /// <summary>
@@ -32,9 +32,9 @@ namespace ConsoleTools.Binding {
 
         //----------------------------------------------------------------------[]
         /// <summary>
-        /// “ип опции, определ€ющий правила еЄ св€зывани€.
+        /// “ип свойства, определ€ющий правила еЄ св€зывани€.
         /// </summary>
-        public OptionType OptionType { get; set; }
+        public Kind PropertyKind { get; set; }
 
         //----------------------------------------------------------------------[]
         /// <summary>
@@ -51,9 +51,9 @@ namespace ConsoleTools.Binding {
         /// <summary>
         /// —оздаЄт новый экземпл€р метаданных опции.
         /// </summary>
-        public OptionMetadata(PropertyDescriptor property)
+        public PropertyMetadata(PropertyDescriptor property)
         {
-            OptionType = OptionType.Unbound;
+            PropertyKind = Kind.Unbound;
             PropertyDescriptor = property;
         }
     }

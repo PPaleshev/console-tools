@@ -21,7 +21,7 @@ namespace ConsoleTools.Binding {
         /// </summary>
         /// <param name="instance">Ёкземпл€р объекта, свойства которого св€зываютс€.</param>
         /// <param name="metadata">ћетаданные опции, значение которой св€зываетс€.</param>
-        public BindingContext(object instance, OptionMetadata metadata) {
+        public BindingContext(object instance, PropertyMetadata metadata) {
             this.instance = instance;
             descriptor = metadata.PropertyDescriptor;
         }

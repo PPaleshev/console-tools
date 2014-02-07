@@ -6,12 +6,12 @@ namespace ConsoleTools.Tests.Data {
     /// <summary>
     /// Класс для проверки привязки обязательных и необязательных параметров.
     /// </summary>
-    public class MandatoryOptions
+    public class MandatoryModel
     {
-        [NamedOption("required;r", true)]
+        [Named("required;r", true)]
         public string RequiredValue { get; set; }
 
-        [NamedOption("optional;o"), DefaultValue("bazzinga")]
+        [Named("optional;o"), DefaultValue("bazzinga")]
         public string OptionalValue { get; set; }
     }
 }

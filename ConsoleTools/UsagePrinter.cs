@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Reflection;
 using System.Text;
 using ConsoleTools.Binding;
@@ -11,48 +12,67 @@ namespace ConsoleTools
     public class UsagePrinter
     {
         /// <summary>
-        /// Массив метаданных свойств.
-        /// </summary>
-        readonly OptionMetadata[] metadata;
-
-        /// <summary>
         /// Флаг, равный true, если при печати использования не нужно печатать лого.
         /// </summary>
-        readonly bool noLogo;
+        readonly bool showLogo;
 
         /// <summary>
         /// Строковый буфер для записи результата.
         /// </summary>
         readonly StringBuilder builder;
 
+        /// <summary>
+        /// Сборка, в которой содержится точка входа в приложение.
+        /// </summary>
+        readonly Assembly entryAssembly;
 
-        public UsagePrinter(OptionMetadata[] metadata, bool noLogo)
+        /// <summary>
+        /// Тип модели.
+        /// </summary>
+        readonly Type modelType;
+
+        public UsagePrinter(Type modelType, bool showLogo = true) : this(Assembly.GetEntryAssembly(), modelType, showLogo)
         {
-            this.metadata = metadata;
-            this.noLogo = noLogo;
-            builder = new StringBuilder();
         }
 
+        public UsagePrinter(Assembly entryAssembly, Type modelType, bool showLogo = true)
+        {
+            this.showLogo = showLogo;
+            builder = new StringBuilder();
+            this.modelType = modelType;
+            this.entryAssembly = entryAssembly;
+        }
+
+        /// <summary>
+        /// Возвращает строку с описанием использования приложения.
+        /// </summary>
         public string Print()
         {
-            StringBuilder buffer = new StringBuilder();
-
-            if (!noLogo)
-            {
+            var buffer = new StringBuilder();
+            if (!showLogo)
                 WriteLogo();
-            }
-
             WriteCommandLineExample();
             WriteParametersDescription();
-
             return buffer.ToString();
         }
 
-        #region Routines
+        /// <summary>
+        /// Пишет информацию об использовании приложения в указанный <paramref name="writer"/>.
+        /// </summary>
+        /// <param name="writer">Объект для вывода информации об использовании приложения.</param>
+        public void Print(TextWriter writer)
+        {
+            writer.Write(Print());
+            writer.Flush();
+        }
 
+        /// <summary>
+        /// Записывает информацию о запускаемом приложении (лого).
+        /// Информация содержит имя приложения, версию и авторские права.
+        /// </summary>
         void WriteLogo()
         {
-            var assembly = Assembly.GetEntryAssembly();
+            var assembly = GetEntryAssembly();
             var attr = GetAttribute<AssemblyTitleAttribute>(assembly);
             if (attr != null)
                 builder.AppendLine(attr.Title);
@@ -69,9 +89,17 @@ namespace ConsoleTools
             builder.AppendLine();
         }
 
-        //----------------------------------------------------------------------[]
         /// <summary>
-        /// Пишет пример использования приложения в выходной буфер.
+        /// Возвращает ссылку на запускаемую сборку, содержащую точку входа в приложение.
+        /// Используется для тестирования.
+        /// </summary>
+        protected virtual Assembly GetEntryAssembly()
+        {
+            return Assembly.GetEntryAssembly();
+        }
+
+        /// <summary>
+        /// Пишет пример запуска приложения в выходной буфер.
         /// </summary>
         void WriteCommandLineExample()
         {
@@ -107,7 +135,5 @@ namespace ConsoleTools
         {
             return (TAttribute)Attribute.GetCustomAttribute(asm, typeof(TAttribute));
         }
-
-        #endregion
     }
 }

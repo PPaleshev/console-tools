@@ -5,17 +5,12 @@ namespace ConsoleTools.Binding {
     /// Базовый атрибут для всех атрибутов, контролирующих способ связывания аргументов.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-    public abstract class OptionBindingAttribute : Attribute
+    public abstract class ModelBindingAttribute : Attribute
     {
         /// <summary>
         /// Флаг, равный true, если значение обязательно для заполнения.
         /// </summary>
         readonly bool isRequired;
-
-        /// <summary>
-        /// Значение по умолчанию.
-        /// </summary>
-        object defaultValue;
 
         /// <summary>
         /// Флаг, равный true, если значение свойства должно быть обязательно указано, иначе false.
@@ -30,7 +25,7 @@ namespace ConsoleTools.Binding {
         /// Создаёт новый экземпляр атрибута.
         /// </summary>
         /// <param name="isRequired">Флаг, равный true, если значение свойства должно быть обязательно указано, иначе false.</param>
-        protected OptionBindingAttribute(bool isRequired)
+        protected ModelBindingAttribute(bool isRequired)
         {
             this.isRequired = isRequired;
         }
@@ -39,6 +34,6 @@ namespace ConsoleTools.Binding {
         /// Реализованный в потомках, заполняет метаданные специфичными параметрами.
         /// </summary>
         /// <param name="metadata">Метаданные свойства.</param>
-        public abstract void FillMetadata(OptionMetadata metadata);
+        public abstract void FillMetadata(PropertyMetadata metadata);
     }
 }

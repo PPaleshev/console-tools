@@ -6,44 +6,44 @@ namespace ConsoleTools.Tests.Data {
     /// <summary>
     /// Опции для тестирования.
     /// </summary>
-    public class SampleOptions {
-        [NamedOption("stringvalue;s")]
+    public class SampleModel {
+        [Named("stringvalue;s")]
         public string StringValue { get; set; }
 
         //----------------------------------------------------------------------[]
-        [NamedOption("intvalue;i")]
+        [Named("intvalue;i")]
         public int? IntValue { get; set; }
 
         //----------------------------------------------------------------------[]
-        [NamedOption("floatvalue;fl")]
+        [Named("floatvalue;fl")]
         public float FloatValue { get; set; }
 
         //----------------------------------------------------------------------[]
-        [NamedOption("doublevalue;d")]
+        [Named("doublevalue;d")]
         public double DoubleValue { get; set; }
 
         //----------------------------------------------------------------------[]
-        [NamedOption("timespan;ts")]
+        [Named("timespan;ts")]
         public TimeSpan? TimeSpanValue { get; set; }
 
         //----------------------------------------------------------------------[]
-        [NamedOption("boolvalue;b")]
+        [Named("boolvalue;b")]
         public bool? BoolValue { get; set; }
 
         //----------------------------------------------------------------------[]
-        [NamedOption("flagvalue;f"), Switch]
+        [Named("flagvalue;f"), Switch]
         public bool? FlagValue { get; set; }
 
         //----------------------------------------------------------------------[]
-        [UnboundOptions]
+        [Unbound]
         public string[] UnboundOptions { get; set; }
 
         //----------------------------------------------------------------------[]
-        [PositionalOption(0)]
+        [Positional(0)]
         public int? PositionalOption1 { get; set; }
 
         //----------------------------------------------------------------------[]
-        [PositionalOption(1)]
+        [Positional(1)]
         public string PositionalOption2 { get; set; }
     }
 }

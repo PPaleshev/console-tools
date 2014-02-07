@@ -4,13 +4,13 @@ namespace ConsoleTools.Exceptions {
     public class MissingRequiredOptionException : BindingException {
         #region Data
 
-        private readonly OptionMetadata _metadata;
+        private readonly PropertyMetadata _metadata;
 
         #endregion
 
         #region Properties
 
-        public OptionMetadata Metadata {
+        public PropertyMetadata Metadata {
             get { return _metadata; }
         }
 
@@ -18,7 +18,7 @@ namespace ConsoleTools.Exceptions {
 
         #region Construction
 
-        public MissingRequiredOptionException(OptionMetadata metadata)
+        public MissingRequiredOptionException(PropertyMetadata metadata)
             : base("Missing required option: " + metadata.Key) {
             _metadata = metadata;
         }
