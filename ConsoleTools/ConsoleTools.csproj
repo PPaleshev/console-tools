@@ -53,11 +53,12 @@
     <Compile Include="CmdArgs.cs" />
     <Compile Include="Conversion\CollectionItemSeparatorAttribute.cs" />
     <Compile Include="Conversion\ValueListConverter.cs" />
-    <Compile Include="Binding\SwitchAttribute.cs" />
     <Compile Include="Binding\NamedAttribute.cs" />
+    <Compile Include="EntryAssemblyDataProvider.cs" />
     <Compile Include="Exceptions\BindingException.cs" />
     <Compile Include="Exceptions\MissingRequiredOptionException.cs" />
     <Compile Include="Binding\PropertyMetadata.cs" />
+    <Compile Include="IApplicationDataProvider.cs" />
     <Compile Include="ModelBinder.cs" />
     <Compile Include="Exceptions\PositionalBindingException.cs" />
     <Compile Include="Binding\PropertyKey.cs" />

@@ -6,7 +6,8 @@ namespace ConsoleTools.Tests.Data {
     /// <summary>
     /// Опции для тестирования.
     /// </summary>
-    public class SampleModel {
+    public class SampleModel
+    {
         [Named("stringvalue;s")]
         public string StringValue { get; set; }
 
@@ -31,19 +32,19 @@ namespace ConsoleTools.Tests.Data {
         public bool? BoolValue { get; set; }
 
         //----------------------------------------------------------------------[]
-        [Named("flagvalue;f"), Switch]
+        [Named("flagvalue;f", Switch = true)]
         public bool? FlagValue { get; set; }
 
         //----------------------------------------------------------------------[]
-        [Unbound]
+        [Unbound("")]
         public string[] UnboundOptions { get; set; }
 
         //----------------------------------------------------------------------[]
-        [Positional(0)]
+        [Positional("positional1", 0)]
         public int? PositionalOption1 { get; set; }
 
         //----------------------------------------------------------------------[]
-        [Positional(1)]
+        [Positional("positional2", 1)]
         public string PositionalOption2 { get; set; }
     }
 }

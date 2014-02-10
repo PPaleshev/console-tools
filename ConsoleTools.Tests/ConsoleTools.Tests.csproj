@@ -42,10 +42,12 @@
     <Compile Include="ArgumentParserTests.cs" />
     <Compile Include="ConversionTests.cs" />
     <Compile Include="Data\ListModel.cs" />
+    <Compile Include="Data\LongestWordModel.cs" />
     <Compile Include="Data\OptionsWithTwoUnboundOptionsProperties.cs" />
     <Compile Include="Data\MandatoryModel.cs" />
     <Compile Include="Data\RequiredPositionalOptions.cs" />
     <Compile Include="Data\SampleModel.cs" />
+    <Compile Include="Data\UsageModel.cs" />
     <Compile Include="PropertyKeyTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ModelBindingTests.cs" />

@@ -19,7 +19,7 @@ namespace ConsoleTools.Tests.Data
         public List<int> IntList { get; set; }
 
         [TypeConverter(typeof(ValueListConverter))]
-        [Positional(0)]
+        [Positional("positional list", 0)]
         public bool[] Positional { get; set; }
 
         [Named("separated")]
