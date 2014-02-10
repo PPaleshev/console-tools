@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -34,8 +35,8 @@ namespace ConsoleTools.Binding
                 if (attr == null)
                     continue;
                 var metadata = new PropertyMetadata(property);
-                metadata.IsRequired = attr.IsRequired;
-                metadata.IsSwitch = property.Attributes[typeof(SwitchAttribute)] != null;
+                metadata.IsRequired = attr.Required;
+                metadata.IsCollection = typeof(IList).IsAssignableFrom(property.PropertyType);
                 attr.FillMetadata(metadata);
                 propertyMetadata.Add(metadata);
             }

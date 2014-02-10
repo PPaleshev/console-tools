@@ -11,14 +11,16 @@ namespace ConsoleTools.Binding
         /// <summary>
         /// Создаёт новый экземпляр атрибута.
         /// </summary>
-        public UnboundAttribute()
-            : base(false)
+        /// <param name="meaning">Значение атрибута для пользователя. Если значение не задано, то оно не будет отображаться пользователю при выводе примеров использования.</param>
+        public UnboundAttribute(string meaning = "")
+            : base(meaning)
         {
         }
 
         public override void FillMetadata(PropertyMetadata metadata)
         {
             metadata.PropertyKind = Kind.Unbound;
+            metadata.Meaning = Meaning;
         }
     }
 }

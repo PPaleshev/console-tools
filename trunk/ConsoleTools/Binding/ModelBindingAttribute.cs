@@ -8,26 +8,31 @@ namespace ConsoleTools.Binding {
     public abstract class ModelBindingAttribute : Attribute
     {
         /// <summary>
-        /// Флаг, равный true, если значение обязательно для заполнения.
+        /// Название обрамляемого свойства.
         /// </summary>
-        readonly bool isRequired;
+        readonly string meaning;
 
         /// <summary>
         /// Флаг, равный true, если значение свойства должно быть обязательно указано, иначе false.
+        /// По умолчанию равен false.
         /// </summary>
-        public bool IsRequired
-        {
-            get { return isRequired; }
-        }
+        public bool Required { get; set; }
 
+        /// <summary>
+        /// Название обрамляемого свойства.
+        /// </summary>
+        public string Meaning
+        {
+            get { return meaning; }
+        }
 
         /// <summary>
         /// Создаёт новый экземпляр атрибута.
         /// </summary>
-        /// <param name="isRequired">Флаг, равный true, если значение свойства должно быть обязательно указано, иначе false.</param>
-        protected ModelBindingAttribute(bool isRequired)
+        /// <param name="meaning">Название обрамляемого свойства.</param>
+        protected ModelBindingAttribute(string meaning)
         {
-            this.isRequired = isRequired;
+            this.meaning = meaning;
         }
 
         /// <summary>

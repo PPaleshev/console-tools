@@ -13,12 +13,15 @@ namespace ConsoleTools.Binding {
         readonly PropertyKey key;
 
         /// <summary>
+        /// True, если аргумент может быть представлен флагом, иначе false.
+        /// </summary>
+        public bool Switch { get; set; }
+
+        /// <summary>
         /// Создаёт новый экземпляр атрибута для разметки именованных аргументов.
         /// </summary>
         /// <param name="key">Ключ для связывания аргументов со свойствами. Может быть указан в формате &lt;name&gt;[;alias].</param>
-        /// <param name="isRequired">Флаг, равный true, если свойство обязательно для заполнения, иначе false.</param>
-        public NamedAttribute(string key, bool isRequired = false)
-            : base(isRequired)
+        public NamedAttribute(string key) : base(key)
         {
             this.key = key;
         }
@@ -27,6 +30,8 @@ namespace ConsoleTools.Binding {
         {
             metadata.Key = key;
             metadata.PropertyKind = Kind.Named;
+            metadata.Meaning = key.Name;
+            metadata.IsSwitch = Switch;
         }
     }
 }

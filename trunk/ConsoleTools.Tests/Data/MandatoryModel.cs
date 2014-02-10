@@ -8,7 +8,7 @@ namespace ConsoleTools.Tests.Data {
     /// </summary>
     public class MandatoryModel
     {
-        [Named("required;r", true)]
+        [Named("required;r", Required = true)]
         public string RequiredValue { get; set; }
 
         [Named("optional;o"), DefaultValue("bazzinga")]

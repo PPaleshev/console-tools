@@ -16,10 +16,10 @@ namespace ConsoleTools.Binding {
         /// <summary>
         /// Создаёт новый экземпляр атрибута.
         /// </summary>
-        /// <param name="position"></param>
-        /// <param name="isRequired"></param>
-        public PositionalAttribute(int position, bool isRequired = false)
-            : base(isRequired)
+        /// <param name="meaning">Назначение обрамляемого свойства.</param>
+        /// <param name="position">Позиция аргумента.</param>
+        public PositionalAttribute(string meaning, int position)
+            : base(meaning)
         {
             if (position < 0)
                 throw new ArgumentOutOfRangeException("position");
@@ -30,6 +30,7 @@ namespace ConsoleTools.Binding {
         {
             metadata.PropertyKind = Kind.Positional;
             metadata.Position = Position;
+            metadata.Meaning = Meaning;
         }
     }
 }
