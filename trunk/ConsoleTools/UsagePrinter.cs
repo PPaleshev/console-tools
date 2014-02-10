@@ -8,6 +8,7 @@ using ConsoleTools.Binding;
 /*
         Console.WriteLine("\ndefault: <usage statement here>.\n");
         Console.WriteLine("Usage:\n  default [-arg1 <value>] [-arg2]");
+        <item[,item,...]>
  */
 
 namespace ConsoleTools
