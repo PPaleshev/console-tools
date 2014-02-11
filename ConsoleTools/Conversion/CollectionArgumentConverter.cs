@@ -8,12 +8,12 @@ namespace ConsoleTools.Conversion {
     /// <summary>
     /// Реализация <see cref="TypeConverter"/> для преобразования списковых значений с учётом разделителей.
     /// </summary>
-    public class ValueListConverter : TypeConverter
+    public class CollectionArgumentConverter : TypeConverter
     {
         /// <summary>
         /// Разделитель элементов списка, используемый по умолчанию.
         /// </summary>
-        const string DefaultListItemSeparator = ",";
+        public const string DefaultListItemSeparator = ",";
 
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {

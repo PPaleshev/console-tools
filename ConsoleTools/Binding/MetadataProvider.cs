@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using ConsoleTools.Conversion;
 
 namespace ConsoleTools.Binding
 {
@@ -37,10 +38,21 @@ namespace ConsoleTools.Binding
                 var metadata = new PropertyMetadata(property);
                 metadata.IsRequired = attr.Required;
                 metadata.IsCollection = typeof(IList).IsAssignableFrom(property.PropertyType);
+                if (metadata.IsCollection)
+                    metadata.CollectionItemSeparator = ReadCollectionPropertySpec(property);
                 attr.FillMetadata(metadata);
                 propertyMetadata.Add(metadata);
             }
             return propertyMetadata;
+        }
+
+        /// <summary>
+        /// Читает дополнительную информацию о свойствах-коллекциях.
+        /// </summary>
+        static string ReadCollectionPropertySpec(MemberDescriptor descriptor)
+        {
+            var separatorAttr = (CollectionItemSeparatorAttribute)descriptor.Attributes[typeof(CollectionItemSeparatorAttribute)];
+            return separatorAttr == null ? CollectionArgumentConverter.DefaultListItemSeparator : separatorAttr.Separator;
         }
     }
 }

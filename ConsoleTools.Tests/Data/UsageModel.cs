@@ -14,11 +14,12 @@ namespace ConsoleTools.Tests.Data
         public string From { get; set; }
 
         [Positional("newname", 3)]
-        [TypeConverter(typeof(ValueListConverter))]
-        [CollectionItemSeparator(",")]
+        [TypeConverter(typeof(CollectionArgumentConverter))]
+        [CollectionItemSeparator(";")]
         public string[] NewNames { get; set; }
 
-        [Positional("masksToCopy", 2)]
+        [Positional("masksToCopy", 2, Required = true)]
+        [TypeConverter(typeof(CollectionArgumentConverter))]
         public string[] MasksToCopy { get; set; }
 
         [Named("force;f", Switch = true)]
