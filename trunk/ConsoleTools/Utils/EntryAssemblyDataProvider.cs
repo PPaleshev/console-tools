@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace ConsoleTools
+namespace ConsoleTools.Utils
 {
     /// <summary>
     /// Реализация провайдера информации о заявлении, получающая её из метаданных сборки, содержащей точку входа. 

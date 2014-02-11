@@ -61,6 +61,11 @@ namespace ConsoleTools.Binding {
         public PropertyDescriptor PropertyDescriptor { get; private set; }
 
         /// <summary>
+        /// Разделитель элементов коллекции.
+        /// </summary>
+        public string CollectionItemSeparator { get; set; }
+
+        /// <summary>
         /// Создаёт новый экземпляр метаданных опции.
         /// </summary>
         public PropertyMetadata(PropertyDescriptor property)
