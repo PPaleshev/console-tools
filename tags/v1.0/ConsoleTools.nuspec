@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>ConsoleTools</id>
+    <version>0.1.0</version>
+    <authors>PPaleshev</authors>
+    <owners>PPaleshev</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Useful classes to parse command line arguments and map them to options objects</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright Pavel Paleshev 2012</copyright>
+    <tags>console tools</tags>
+  </metadata>
+  <files>
+    <file src="ConsoleTools\bin\Release\ConsoleTools.dll" target="lib\net20"/>
+  </files>
+</package>
