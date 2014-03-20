@@ -50,7 +50,7 @@ namespace ConsoleTools.Utils
             foreach (var property in context.PositionalOrderedProperties)
             {
                 writer.Write(property.Meaning);
-                writer.Write("\t(position: {0}", property.Position);
+                writer.Write("\t(position: {0}", property.Specification.Position);
                 writer.Write(property.IsRequired ? ", required" : ", optional");
                 writer.WriteLine(")");
                 WriteDescription(property);
@@ -68,15 +68,16 @@ namespace ConsoleTools.Utils
             var arg = context.NamedArgsInfo;
             foreach (var property in context.NamedProperties)
             {
+                var spec = property.Specification;
                 writer.Write(arg.Prefix);
-                writer.Write(property.Key.Name);
-                if (property.Key.HasAlias)
+                writer.Write(spec.Key.Name);
+                if (spec.Key.HasAlias)
                 {
                     writer.Write(", ");
                     writer.Write(arg.Prefix);
-                    writer.Write(property.Key.Alias);
+                    writer.Write(spec.Key.Alias);
                 }
-                writer.Write(property.IsSwitch ? "\t(Switch" : "\t(Named");
+                writer.Write(spec.IsSwitch ? "\t(Switch" : "\t(Named");
                 writer.Write(property.IsRequired ? ", required" : ", optional");
                 writer.WriteLine(")");
                 WriteDescription(property);

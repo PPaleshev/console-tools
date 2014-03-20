@@ -7,10 +7,10 @@ namespace ConsoleTools.Tests.Data
     [NamedArgumentsPolicy("-", '=')]
     public class UsageModel
     {
-        [Positional("to", 1, Required = true)]
+        [Positional("to", 1, IsRequired = true)]
         public string To { get; set; }
 
-        [Positional("from", 0, Required = true)]
+        [Positional("from", 0, IsRequired = true)]
         public string From { get; set; }
 
         [Positional("newname", 3)]
@@ -18,14 +18,14 @@ namespace ConsoleTools.Tests.Data
         [CollectionItemSeparator(";")]
         public string[] NewNames { get; set; }
 
-        [Positional("masksToCopy", 2, Required = true)]
+        [Positional("masksToCopy", 2, IsRequired = true)]
         [TypeConverter(typeof(CollectionArgumentConverter))]
         public string[] MasksToCopy { get; set; }
 
-        [Named("force;f", Switch = true)]
+        [Named("force;f", IsSwitch = true)]
         public bool Force { get; set; }
 
-        [Named("target;t", Required = true)]
+        [Named("target;t", IsRequired = true)]
         public int Target { get; set; }
     }
 }

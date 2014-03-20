@@ -32,7 +32,7 @@ namespace ConsoleTools.Tests.Data {
         public bool? BoolValue { get; set; }
 
         //----------------------------------------------------------------------[]
-        [Named("flagvalue;f", Switch = true)]
+        [Named("flagvalue;f", IsSwitch = true)]
         public bool? FlagValue { get; set; }
 
         //----------------------------------------------------------------------[]

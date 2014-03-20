@@ -3,6 +3,7 @@ namespace ConsoleTools.Binding {
     /// ѕеречисление, определ€ющее тип аргумента.
     /// </summary>
     public enum Kind {
+
         /// <summary>
         /// —вободный аргумент.
         /// </summary>

@@ -41,7 +41,9 @@
   <ItemGroup>
     <Compile Include="ArgumentParserTests.cs" />
     <Compile Include="ConversionTests.cs" />
-    <Compile Include="Data\ListModel.cs" />
+    <Compile Include="Data\Enums.cs" />
+    <Compile Include="Data\InvalidModel.cs" />
+    <Compile Include="Data\ListsModel.cs" />
     <Compile Include="Data\LongestWordModel.cs" />
     <Compile Include="Data\OptionsWithTwoUnboundOptionsProperties.cs" />
     <Compile Include="Data\MandatoryModel.cs" />

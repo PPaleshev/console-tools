@@ -54,7 +54,7 @@ namespace ConsoleTools.Utils
             foreach (var property in context.PositionalOrderedProperties)
             {
                 writer.Write(" ");
-                var text = property.IsCollection ? GetCollectionSpec(property) : property.Meaning;
+                var text = property.Specification.IsCollection ? GetCollectionSpec(property) : property.Meaning;
                 context.WriteQuoted(text, property.IsRequired);
             }
         }
@@ -70,12 +70,13 @@ namespace ConsoleTools.Utils
             var arg = context.NamedArgsInfo;
             foreach (var property in context.NamedProperties)
             {
+                var spec = property.Specification;
                 writer.Write(" ");
-                var text = arg.Prefix + property.Key.Name;
-                if (property.IsSwitch && property.Key.HasAlias)
-                    text += "|" + arg.Prefix + property.Key.Alias;
-                if (!property.IsSwitch) // TODO: add code to write named arguments
-                    text += arg.Separator + (property.IsCollection ? GetCollectionSpec(property) : "VALUE");
+                var text = arg.Prefix + spec.Key.Name;
+                if (spec.IsSwitch && spec.Key.HasAlias)
+                    text += "|" + arg.Prefix + spec.Key.Alias;
+                if (!spec.IsSwitch) // TODO: add code to write named arguments
+                    text += arg.Separator + (spec.IsCollection ? GetCollectionSpec(property) : "VALUE");
                 context.WriteQuoted(text, property.IsRequired);
             }
         }
@@ -96,8 +97,9 @@ namespace ConsoleTools.Utils
         /// <param name="property">Метаданные свойства.</param>
         static string GetCollectionSpec(PropertyMetadata property)
         {
-            return string.IsNullOrWhiteSpace(property.Meaning) ? string.Format("item[{0}item{0}...]", property.CollectionItemSeparator) :
-                string.Format("{{{1}}}item[{0}item{0}...]", property.CollectionItemSeparator, property.Meaning);
+            var spec = property.Specification;
+            return string.IsNullOrWhiteSpace(property.Meaning) ? string.Format("item[{0}item{0}...]", spec.CollectionItemSeparator):
+                string.Format("{{{1}}}item[{0}item{0}...]", spec.CollectionItemSeparator, property.Meaning);
         }
     }
 }

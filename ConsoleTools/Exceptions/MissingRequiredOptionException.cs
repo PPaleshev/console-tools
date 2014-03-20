@@ -1,28 +1,23 @@
+using System;
 using ConsoleTools.Binding;
 
 namespace ConsoleTools.Exceptions {
-    public class MissingRequiredOptionException : BindingException {
-        #region Data
+    /// <summary>
+    /// Исключение, возникающее при отсутствии значения обязательного параметра.
+    /// </summary>
+    public class MissingRequiredOptionException : ApplicationException {
+        /// <summary>
+        /// Метаданные свойства, при связывании которого возникло исключение.
+        /// </summary>
+        public PropertyMetadata Metadata { get; private set; }
 
-        private readonly PropertyMetadata _metadata;
-
-        #endregion
-
-        #region Properties
-
-        public PropertyMetadata Metadata {
-            get { return _metadata; }
+        /// <summary>
+        /// Создаёт новый экземпляр исключения.
+        /// </summary>
+        /// <param name="metadata">Метаданные свойства, при связывании которого возникла ошибка.</param>
+        public MissingRequiredOptionException(PropertyMetadata metadata) : base("Missing required option")
+        {
+            Metadata = metadata;
         }
-
-        #endregion
-
-        #region Construction
-
-        public MissingRequiredOptionException(PropertyMetadata metadata)
-            : base("Missing required option: " + metadata.Key) {
-            _metadata = metadata;
-        }
-
-        #endregion
     }
 }
