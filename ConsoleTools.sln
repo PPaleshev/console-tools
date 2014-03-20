@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTools", "ConsoleTool
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTools.Tests", "ConsoleTools.Tests\ConsoleTools.Tests.csproj", "{74511569-F40C-465F-B215-4B94532CA85B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTools.Example", "ConsoleTools.Example\ConsoleTools.Example.csproj", "{D3F514BC-A1AD-4DC5-9673-32719C5AE503}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{74511569-F40C-465F-B215-4B94532CA85B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74511569-F40C-465F-B215-4B94532CA85B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74511569-F40C-465F-B215-4B94532CA85B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3F514BC-A1AD-4DC5-9673-32719C5AE503}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3F514BC-A1AD-4DC5-9673-32719C5AE503}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3F514BC-A1AD-4DC5-9673-32719C5AE503}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3F514BC-A1AD-4DC5-9673-32719C5AE503}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
