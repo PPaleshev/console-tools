@@ -1,32 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using ConsoleTools.Binding;
-using ConsoleTools.Tests.Data;
-using NUnit.Framework;
+﻿using ConsoleTools.Binding;
 
-namespace ConsoleTools.Tests
+namespace ConsoleTools.Example
 {
-    /// <summary>
-    /// Тесты печати информации о приложении.
-    /// </summary>
-    [TestFixture]
-    public class UsagePrinterTests
-    {
-        [TestCase(typeof(UsageModel))]
-        [TestCase(typeof(LongestWordModel))]
-        [TestCase(typeof(WsdlGeneratorModel))]
-        public void Test(Type modelType)
-        {
-            var printer = new UsagePrinter(modelType, new DataProvider());
-            Console.WriteLine(printer.Print());
-        }
-    }
-
     /// <summary>
     /// Модель входных аргументов для генератора сборок по wsdl.
     /// </summary>
-    [NamedArgumentsPolicy("/", '=')]
     public class WsdlGeneratorModel
     {
         /// <summary>
@@ -52,33 +30,5 @@ namespace ConsoleTools.Tests
         /// </summary>
         [Named("version;v", IsRequired = true, Description = "Assembly version in <Major>.<Minor>.<Build>.<Revision> format.")]
         public string Version { get; set; }
-    }
-
-    class DataProvider : IApplicationDataProvider
-    {
-        public string ApplicationExeName
-        {
-            get { return "UsagePrinter.exe"; }
-        }
-
-        public string Title
-        {
-            get { return "UsagePrinter"; }
-        }
-
-        public string Version
-        {
-            get { return "1.0b"; }
-        }
-
-        public string Description
-        {
-            get { return "Provides tools for automated usage printing of specified application."; }
-        }
-
-        public string Copyright
-        {
-            get { return "Copyright Nogard 2012 (C)"; }
-        }
     }
 }

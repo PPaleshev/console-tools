@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Reflection;
 using System.Text;
 using ConsoleTools.Binding;
 using ConsoleTools.Utils;
@@ -35,27 +35,26 @@ namespace ConsoleTools
         readonly Type modelType;
 
         /// <summary>
-        /// ћетаданные свойств модели.
+        /// —оздаЄт новый экземпл€р класса.
+        /// »нформаци€ о приложении берЄтс€ из метаданных сборки, содержащей точку входа (<see cref="Assembly.GetEntryAssembly"/>).
         /// </summary>
-        readonly IList<PropertyMetadata> metadata;
-
-        /// <summary>
-        /// ѕараметры разбора именованных аргументов.
-        /// </summary>
-        readonly NamedArgumentsPolicyAttribute namedArgumentsPolicy;
-
-        public UsagePrinter(Type modelType, bool showLogo = true)
-            : this(modelType, new EntryAssemblyDataProvider(), showLogo)
+        /// <param name="modelType">“ип модели.</param>
+        /// <param name="showLogo">‘лаг, определ€ющий необходимость отображени€ информации о приложении.</param>
+        public UsagePrinter(Type modelType, bool showLogo = true) : this(modelType, new EntryAssemblyDataProvider(), showLogo)
         {
         }
 
+        /// <summary>
+        /// —оздаЄт новый экземпл€р класса.
+        /// </summary>
+        /// <param name="dataProvider">ѕоставщик основной информации о запускаемом приложении.</param>
+        /// <param name="modelType">“ип модели.</param>
+        /// <param name="showLogo">‘лаг, определ€ющий необходимость отображени€ информации о приложении.</param>
         public UsagePrinter(Type modelType, IApplicationDataProvider dataProvider, bool showLogo = true)
         {
             this.showLogo = showLogo;
             this.modelType = modelType;
             appInfo = dataProvider;
-            metadata = MetadataProvider.ReadPropertyMetadata(modelType);
-            namedArgumentsPolicy = MetadataProvider.GetNamedArgumentsPolicy(modelType);
         }
 
         /// <summary>

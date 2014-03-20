@@ -72,7 +72,7 @@ namespace ConsoleTools.Utils
         }
 
         /// <summary>
-        /// Пишет в <see cref="Writer"/> текст <paramref name="text"/>, обрамляя его скобками в зависимости от флага <paramref name="isRequired"/>.
+        /// Пишет в <see cref="Writer"/> текст <paramref name="text"/>, заключая его соответствующие скобки в зависимости от флага <paramref name="isRequired"/>.
         /// </summary>
         /// <remarks>Вызывается метод <see cref="TextWriter.Write(string)"/>, не выполняется возврат каретки.</remarks>
         public void WriteQuoted(string text, bool isRequired)
@@ -81,7 +81,7 @@ namespace ConsoleTools.Utils
         }
 
         /// <summary>
-        /// Вставляет <paramref name="count"/> символов завершения строки.
+        /// Вставляет <paramref name="count"/> символов перевода строки.
         /// </summary>
         public void WriteLine(uint count = 1)
         {

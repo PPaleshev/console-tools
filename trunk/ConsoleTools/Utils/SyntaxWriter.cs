@@ -75,7 +75,7 @@ namespace ConsoleTools.Utils
                 var text = arg.Prefix + spec.Key.Name;
                 if (spec.IsSwitch && spec.Key.HasAlias)
                     text += "|" + arg.Prefix + spec.Key.Alias;
-                if (!spec.IsSwitch) // TODO: add code to write named arguments
+                if (!spec.IsSwitch)
                     text += arg.Separator + (spec.IsCollection ? GetCollectionSpec(property) : "VALUE");
                 context.WriteQuoted(text, property.IsRequired);
             }
@@ -98,8 +98,9 @@ namespace ConsoleTools.Utils
         static string GetCollectionSpec(PropertyMetadata property)
         {
             var spec = property.Specification;
-            return string.IsNullOrWhiteSpace(property.Meaning) ? string.Format("item[{0}item{0}...]", spec.CollectionItemSeparator):
-                string.Format("{{{1}}}item[{0}item{0}...]", spec.CollectionItemSeparator, property.Meaning);
+            return string.IsNullOrWhiteSpace(property.Meaning)
+                ? string.Format("item[{0}item{0}...]", spec.CollectionItemSeparator)
+                : string.Format("{{{1}}}item[{0}item{0}...]", spec.CollectionItemSeparator, property.Meaning);
         }
     }
 }

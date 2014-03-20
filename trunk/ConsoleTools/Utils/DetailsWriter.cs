@@ -104,6 +104,8 @@ namespace ConsoleTools.Utils
         {
             context.Writer.Write("\t");
             context.Writer.WriteLine(string.IsNullOrWhiteSpace(property.Description) ? "{no description}" : property.Description);
+            if (property.DefaultValue != null)
+                context.Writer.WriteLine("\tDefault value: {0}", property.DefaultValue);
             context.Writer.WriteLine();
         }
     }
