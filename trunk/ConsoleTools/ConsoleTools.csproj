@@ -46,14 +46,22 @@
     <Compile Include="Binding\MetadataProvider.cs" />
     <Compile Include="Binding\NamedArgumentsPolicyAttribute.cs" />
     <Compile Include="Binding\Kind.cs" />
-    <Compile Include="Binding\BindingContext.cs" />
     <Compile Include="Binding\PositionalAttribute.cs" />
     <Compile Include="Binding\ModelBindingAttribute.cs" />
+    <Compile Include="Binding\PropertySpecification.cs" />
+    <Compile Include="Binding\SpecificationAttribute.cs" />
     <Compile Include="Binding\UnboundAttribute.cs" />
     <Compile Include="CmdArgs.cs" />
+    <Compile Include="Conversion\CollectionConversionAttribute.cs" />
     <Compile Include="Conversion\CollectionItemSeparatorAttribute.cs" />
     <Compile Include="Conversion\CollectionArgumentConverter.cs" />
     <Compile Include="Binding\NamedAttribute.cs" />
+    <Compile Include="Conversion\ConverterAttribute.cs" />
+    <Compile Include="Conversion\Converters.cs" />
+    <Compile Include="Conversion\DateTimeConversionAttribute.cs" />
+    <Compile Include="Conversion\IConverter.cs" />
+    <Compile Include="Conversion\IConverterProvider.cs" />
+    <Compile Include="Conversion\TimeSpanConversionAttribute.cs" />
     <Compile Include="Exceptions\BindingException.cs" />
     <Compile Include="Exceptions\MissingRequiredOptionException.cs" />
     <Compile Include="Binding\PropertyMetadata.cs" />
@@ -78,7 +86,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>nuget pack $(SolutionDir)$(SolutionName).nuspec</PostBuildEvent>
+    <PostBuildEvent>rem nuget pack $(SolutionDir)$(SolutionName).nuspec</PostBuildEvent>
     <PreBuildEvent>erase *.nupkg</PreBuildEvent>
   </PropertyGroup>
 </Project>

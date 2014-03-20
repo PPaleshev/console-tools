@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using ConsoleTools.Binding;
 using ConsoleTools.Exceptions;
@@ -95,7 +96,7 @@ namespace ConsoleTools.Tests {
         /// Проверяет, что при невозможности привязать позиционный аргумент выбрасывается исключение.
         /// </summary>
         [Test]
-        [ExpectedException(typeof(PositionalBindingException))]
+        [ExpectedException(typeof(BindingException))]
         public void TestRequiredPositionalOptionBinding()
         {
             ParseAndBindTo<RequiredPositionalOptions>();
@@ -126,7 +127,7 @@ namespace ConsoleTools.Tests {
 
             Assert.IsTrue(options.IntValue.HasValue);
             Assert.AreEqual(37, options.IntValue);
-            Assert.AreEqual(2.2, options.FloatValue);
+            Assert.True(Math.Abs(options.FloatValue - 2.2) < 0.001);
             Assert.AreEqual(729237.188, options.DoubleValue);
             Assert.IsNotNull(options.TimeSpanValue);
             Assert.AreEqual(TimeSpan.FromMinutes(5), options.TimeSpanValue.Value);
@@ -139,7 +140,7 @@ namespace ConsoleTools.Tests {
         /// Проверяет, что при отсутствии необходимого аргумента выбрасывается исключение.
         /// </summary>
         [Test]
-        [ExpectedException(typeof (MissingRequiredOptionException))]
+        [ExpectedException(typeof (BindingException))]
         public void TestMissingRequiredArgumentThrowsException() {
             ParseAndBindTo<MandatoryModel>();
         }
@@ -170,7 +171,7 @@ namespace ConsoleTools.Tests {
         /// </summary>
         [Test]
         public void TestDefaultListBindingWithoutConversion() {
-            var opts = ParseAndBindTo<ListModel>("/default=1,2,3,4");
+            var opts = ParseAndBindTo<ListsModel>("/default=1,2,3,4");
 
             Assert.IsNotNull(opts);
             Assert.IsNotNull(opts.Default);
@@ -188,7 +189,7 @@ namespace ConsoleTools.Tests {
         [Test]
         public void TestEmptyListBinding()
         {
-            var opts = ParseAndBindTo<ListModel>("/default=");
+            var opts = ParseAndBindTo<ListsModel>("/default=");
             Assert.IsNotNull(opts);
             Assert.IsNotNull(opts.Default);
             Assert.AreEqual(0, opts.Default.Length);
@@ -196,11 +197,11 @@ namespace ConsoleTools.Tests {
 
         //----------------------------------------------------------------------[]
         /// <summary>
-        /// Проверяет связывание элементов списка в массив.
+        /// Проверяет связывание коллекции элементов в массив.
         /// </summary>
         [Test]
         public void TestListBindingWithArrayConversion() {
-            var opts = ParseAndBindTo<ListModel>("/default=foo, bar, bazz");
+            var opts = ParseAndBindTo<ListsModel>("/default=foo, bar, bazz");
 
             Assert.IsNotNull(opts);
             Assert.IsNotNull(opts.Default);
@@ -217,7 +218,7 @@ namespace ConsoleTools.Tests {
         [Test]
         public void TestListBindingWithGenericListConversion()
         {
-            var opts = ParseAndBindTo<ListModel>("/list=1,2,-9,4");
+            var opts = ParseAndBindTo<ListsModel>("/list=1,2,-9,4");
 
             Assert.IsNotNull(opts);
             Assert.IsNotNull(opts.IntList);
@@ -234,7 +235,7 @@ namespace ConsoleTools.Tests {
         /// </summary>
         [Test]
         public void TestListPositionalBindingWithConversion() {
-            var opts = ParseAndBindTo<ListModel>("true,false,false,true");
+            var opts = ParseAndBindTo<ListsModel>("true,false,false,true");
 
             Assert.IsNotNull(opts);
             Assert.IsNotNull(opts.Positional);
@@ -247,11 +248,11 @@ namespace ConsoleTools.Tests {
 
         //----------------------------------------------------------------------[]
         /// <summary>
-        /// Проверяет связывание элементов коллекции в лист с указанием разделителя для элементов.
+        /// Проверяет связывание элементов коллекции в список с указанием разделителя для элементов.
         /// </summary>
         [Test]
         public void TestListBindingWithSpecifiedSeparator() {
-            var options = ParseAndBindTo<ListModel>("/separated=1_2_221_-7");   
+            var options = ParseAndBindTo<ListsModel>("/separated=1_2_221_-7");   
             
             Assert.IsNotNull(options);
             Assert.IsNotNull(options.SeparatedList);
@@ -263,13 +264,33 @@ namespace ConsoleTools.Tests {
         }
 
         /// <summary>
+        /// Проверяет связывание элементов коллекции в список с указанием формата элементов коллекции.
+        /// </summary>
+        [Test]
+        public void TestListBindingWithExplicitElementFormat()
+        {
+            var options = ParseAndBindTo<ListsModel>("/times=5-10-15 15-20-25 20-25-30");
+            Assert.NotNull(options);
+            Assert.NotNull(options.Timespans);
+            Assert.AreEqual(new TimeSpan(5, 10, 15), options.Timespans[0]);
+            Assert.AreEqual(new TimeSpan(15, 20, 25), options.Timespans[1]);
+            Assert.AreEqual(new TimeSpan(20, 25, 30), options.Timespans[2]);
+        }
+
+        [Test]
+        public void TestModelWithManyUnboundProperties()
+        {
+            Assert.Throws<BindingException>(() => ParseAndBindTo<InvalidModel>("one", "two", "three"));
+        }
+
+        /// <summary>
         /// Разбирает массив аргументов и привязывает его к объекту указанного типа.
         /// </summary>
         /// <typeparam name="TOptions">Тип объекта для привязки аргументов командной строки.</typeparam>
         /// <param name="args">Массив переданных аргументов.</param>
-        private TOptions ParseAndBindTo<TOptions>(params string[] args) where TOptions : new() {
+        TOptions ParseAndBindTo<TOptions>(params string[] args) where TOptions : new() {
             var cmdargs = parser.Parse(args);
-            return ModelBinder.BindTo<TOptions>(cmdargs);
+            return ModelBinder.BindTo<TOptions>(cmdargs, CultureInfo.InvariantCulture);
         }
     }
 }

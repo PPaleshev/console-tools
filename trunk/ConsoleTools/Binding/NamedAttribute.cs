@@ -1,6 +1,7 @@
 using System;
 
-namespace ConsoleTools.Binding {
+namespace ConsoleTools.Binding
+{
     /// <summary>
     /// јтрибут, которым помечаютс€ свойства объекты, которые должны быть св€заны с именованными аргументами.
     /// </summary>
@@ -13,9 +14,9 @@ namespace ConsoleTools.Binding {
         readonly PropertyKey key;
 
         /// <summary>
-        /// True, если аргумент может быть представлен флагом, иначе false.
+        /// True, если аргумент представлен флагом, иначе false.
         /// </summary>
-        public bool Switch { get; set; }
+        public bool IsSwitch { get; set; }
 
         /// <summary>
         /// —оздаЄт новый экземпл€р атрибута дл€ разметки именованных аргументов.
@@ -26,12 +27,15 @@ namespace ConsoleTools.Binding {
             this.key = key;
         }
 
-        public override void FillMetadata(PropertyMetadata metadata)
+        public override void UpdateSpecification(PropertySpecification spec)
         {
-            metadata.Key = key;
-            metadata.PropertyKind = Kind.Named;
-            metadata.Meaning = key.Name;
-            metadata.IsSwitch = Switch;
+            spec.IsSwitch = IsSwitch;
+            spec.Key = key;
+        }
+
+        public override Kind GetPropertyKind()
+        {
+            return Kind.Named;
         }
     }
 }

@@ -60,7 +60,7 @@ namespace ConsoleTools.Utils
             if (data.TryGetValue(Kind.Named, out temp))
                 NamedProperties = temp;
             if (data.TryGetValue(Kind.Positional, out temp))
-                PositionalOrderedProperties = temp.OrderBy(m => m.Position).ToList();
+                PositionalOrderedProperties = temp.OrderBy(m => m.Specification.Position).ToList();
             if (data.TryGetValue(Kind.Unbound, out temp))
             {
                 if (temp.Count > 1)

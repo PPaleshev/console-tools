@@ -1,6 +1,7 @@
 using System;
 
-namespace ConsoleTools.Binding {
+namespace ConsoleTools.Binding
+{
     /// <summary>
     /// јтрибут дл€ разметки позиционных аргументов.
     /// </summary>
@@ -26,11 +27,14 @@ namespace ConsoleTools.Binding {
             Position = position;
         }
 
-        public override void FillMetadata(PropertyMetadata metadata)
+        public override Kind GetPropertyKind()
         {
-            metadata.PropertyKind = Kind.Positional;
-            metadata.Position = Position;
-            metadata.Meaning = Meaning;
+            return Kind.Positional;
+        }
+
+        public override void UpdateSpecification(PropertySpecification spec)
+        {
+            spec.Position = Position;
         }
     }
 }

@@ -5,10 +5,10 @@ namespace ConsoleTools.Binding {
     /// Базовый атрибут для всех атрибутов, контролирующих способ связывания аргументов.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-    public abstract class ModelBindingAttribute : Attribute
+    public abstract class ModelBindingAttribute : SpecificationAttribute
     {
         /// <summary>
-        /// Название обрамляемого свойства.
+        /// Смысловое значение обрамляемого свойства.
         /// </summary>
         readonly string meaning;
 
@@ -16,7 +16,17 @@ namespace ConsoleTools.Binding {
         /// Флаг, равный true, если значение свойства должно быть обязательно указано, иначе false.
         /// По умолчанию равен false.
         /// </summary>
-        public bool Required { get; set; }
+        public bool IsRequired { get; set; }
+
+        /// <summary>
+        /// Значение по умолчанию. Используется только если свойство является необязательным.
+        /// </summary>
+        public object DefaultValue { get; set; }
+
+        /// <summary>
+        /// Описание свойства.
+        /// </summary>
+        public string Description { get; set; }
 
         /// <summary>
         /// Название обрамляемого свойства.
@@ -36,9 +46,8 @@ namespace ConsoleTools.Binding {
         }
 
         /// <summary>
-        /// Реализованный в потомках, заполняет метаданные специфичными параметрами.
+        /// Возвращает тип аргумента, описываемого атрибутом.
         /// </summary>
-        /// <param name="metadata">Метаданные свойства.</param>
-        public abstract void FillMetadata(PropertyMetadata metadata);
+        public abstract Kind GetPropertyKind();
     }
 }
