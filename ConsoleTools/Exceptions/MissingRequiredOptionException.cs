@@ -1,11 +1,10 @@
-using System;
 using ConsoleTools.Binding;
 
 namespace ConsoleTools.Exceptions {
     /// <summary>
     /// Исключение, возникающее при отсутствии значения обязательного параметра.
     /// </summary>
-    public class MissingRequiredOptionException : ApplicationException {
+    public class MissingRequiredOptionException : BindingException {
         /// <summary>
         /// Метаданные свойства, при связывании которого возникло исключение.
         /// </summary>

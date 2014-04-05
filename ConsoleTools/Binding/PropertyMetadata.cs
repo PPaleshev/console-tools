@@ -6,7 +6,7 @@ using ConsoleTools.Conversion;
 
 namespace ConsoleTools.Binding {
     /// <summary>
-    ///  ласс, представл€ющий собой метаданные, необходимые в процессе св€зывани€ значени€.
+    /// ћетаданные свойства модели.
     /// </summary>
     public class PropertyMetadata
     {

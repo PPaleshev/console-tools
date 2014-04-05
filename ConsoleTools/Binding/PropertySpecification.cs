@@ -1,4 +1,6 @@
-﻿namespace ConsoleTools.Binding
+﻿using System.Collections.Generic;
+
+namespace ConsoleTools.Binding
 {
     /// <summary>
     /// Свойства, специфичные для различных типов аргументов.
@@ -39,5 +41,10 @@
         /// Разделитель элементов коллекций.
         /// </summary>
         public string CollectionItemSeparator { get; set; }
+
+        /// <summary>
+        /// Справочник дополнительных спецификаций.
+        /// </summary>
+        public Dictionary<string, object> Custom { get; private set; }
     }
 }
