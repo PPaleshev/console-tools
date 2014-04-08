@@ -83,17 +83,45 @@ namespace ConsoleTools {
         /// <returns>Возвращает объект с установленными значениями свойств.</returns>
         TModel Bind<TModel>() where TModel : new()
         {
-            var propertyMetadata = MetadataProvider.ReadPropertyMetadata(typeof (TModel));
             var model = new TModel();
-            var propertyGroups = propertyMetadata.GroupBy(metadata => metadata.PropertyKind).ToDictionary(g => g.Key, g => g.ToList());
+            var metadatas = MetadataProvider.ReadMetadata(typeof (TModel));
+            BindUsingMetadata(model, metadatas);
+            return model;
+        }
+
+        /// <summary>
+        /// Выполняет связывание свойств модели с использованием метаданных.
+        /// </summary>
+        /// <param name="target">Экземпляр модели для связывания.</param>
+        /// <param name="metadatas">Перечисление метаданных для связывания.</param>
+        void BindUsingMetadata(object target, IEnumerable<IMetadata> metadatas)
+        {
+            var typeGroups = metadatas.GroupBy(m => m.GetType()).ToDictionary(g => g.Key, g => g.ToList());
+            List<IMetadata> temp;
+            if (typeGroups.TryGetValue(typeof (PropertyMetadata), out temp))
+                BindProperties(temp, target);
+            if (typeGroups.TryGetValue(typeof (StaticPartMetadata), out temp))
+                BindStaticParts(temp, target);
+            if (typeGroups.TryGetValue(typeof (DynamicPartMetadata), out temp))
+                BindDynamicParts(temp, target);
+        }
+
+        //----------------------------------------------------------------------[]
+        /// <summary>
+        /// Привязывает свойства модели.
+        /// </summary>
+        /// <param name="metadatas">Список свойств модели для привязки.</param>
+        /// <param name="target"></param>
+        void BindProperties(IEnumerable<IMetadata> metadatas, object target)
+        {
+            var propertyGroups = metadatas.OfType<PropertyMetadata>().GroupBy(metadata => metadata.PropertyKind).ToDictionary(g => g.Key, g => g.ToList());
             List<PropertyMetadata> properties;
             if (propertyGroups.TryGetValue(Kind.Named, out properties))
-                BindNamedOptions(properties, model);
+                BindNamedOptions(properties, target);
             if (propertyGroups.TryGetValue(Kind.Positional, out properties))
-                BindPositionalOptions(properties, model);
+                BindPositionalOptions(properties, target);
             if (propertyGroups.TryGetValue(Kind.Unbound, out properties))
-                CollectUnboundOptions(properties, model);
-            return model;
+                CollectUnboundOptions(properties, target);
         }
 
         //----------------------------------------------------------------------[]
@@ -135,6 +163,28 @@ namespace ConsoleTools {
             var unboundOptionsTarget = properties[0];
             if (unboundOptionsTarget != null)
                 BindUnboundOptions(unboundOptionsTarget, target);
+        }
+
+        /// <summary>
+        /// Выполняет связывание статических частей модели.
+        /// </summary>
+        /// <param name="staticParts">Список метаданных статических частей модели.</param>
+        /// <param name="target">Родительский объект для всех указанных частей.</param>
+        void BindStaticParts(IEnumerable<IMetadata> staticParts, object target)
+        {
+            foreach (StaticPartMetadata part in staticParts)
+                BindStaticPart(part, target);
+        }
+
+        /// <summary>
+        /// Выполняет связывание динамических частей модели.
+        /// </summary>
+        /// <param name="dynamicParts">Список метаданных динамических частей модели.</param>
+        /// <param name="target">Родительский объект для всех указанных частей.</param>
+        void BindDynamicParts(IEnumerable<IMetadata> dynamicParts, object target)
+        {
+            foreach (DynamicPartMetadata part in dynamicParts)
+                BindDynamicPart(part, target);
         }
 
         //----------------------------------------------------------------------[]
@@ -223,9 +273,36 @@ namespace ConsoleTools {
         }
 
         /// <summary>
+        /// Выполняет связывание свойств статической части модели.
+        /// </summary>
+        /// <param name="meta">Метаданные статической части.</param>
+        /// <param name="target">Родительский объект.</param>
+        void BindStaticPart(StaticPartMetadata meta, object target)
+        {
+            var partValue = meta.Property.GetValue(target, null);
+            if (partValue == null)
+                throw new InvalidOperationException(string.Format("Static part '{0}.{1}' should be initialized before binding", target.GetType().Name, meta.Property.Name));
+            BindUsingMetadata(partValue, meta.Properties);
+        }
+
+        /// <summary>
+        /// Выполняет связывание свойств динамической части модели.
+        /// </summary>
+        /// <param name="meta">Метаданные динамической части.</param>
+        /// <param name="target">Родительский объект.</param>
+        void BindDynamicPart(DynamicPartMetadata meta, object target)
+        {
+            var partValue = meta.Property.GetValue(target, null);
+            if (partValue == null)
+                throw new InvalidOperationException(string.Format("Dynamic part '{0}.{1}' should be initialized before binding", target.GetType().Name, meta.Property.Name));
+            var metadata = MetadataProvider.ReadMetadata(partValue.GetType());
+            BindUsingMetadata(partValue, metadata);
+        }
+
+        /// <summary>
         /// Устанавливает значение свойства.
         /// </summary>
-        static void SetValue(PropertyMetadata meta, object instance,  object value)
+        static void SetValue(IMetadata meta, object instance, object value)
         {
             meta.Property.SetValue(instance, value, null);
         }

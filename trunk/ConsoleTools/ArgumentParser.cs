@@ -56,7 +56,7 @@ namespace ConsoleTools {
         /// </summary>
         /// <param name="args">Аргументы для разбора.</param>
         /// <returns></returns>
-        public CmdArgs Parse(string[] args) {
+        public CmdArgs Parse(params string[] args) {
             var result = new CmdArgs();
 
             foreach (var arg in args) {

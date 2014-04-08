@@ -25,14 +25,30 @@ namespace ConsoleTools.Binding
         /// </summary>
         /// <param name="modelType">Тип модели.</param>
         /// <returns>Возвращает список метаданных свойств модели.</returns>
-        public static IList<PropertyMetadata> ReadPropertyMetadata(Type modelType)
+        public static IList<IMetadata> ReadMetadata(Type modelType)
         {
             var properties = modelType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
             var data = from property in properties
                 let attr = (ModelBindingAttribute) Attribute.GetCustomAttribute(property, typeof (ModelBindingAttribute), false)
                 where attr != null
                 select PropertyMetadata.ReadFromProperty(property, attr);
-            return data.ToList();
+            var parts = from property in properties
+                let attr = (PartAttribute) Attribute.GetCustomAttribute(property, typeof (PartAttribute), false)
+                where attr != null
+                orderby attr.Order
+                select ReadFromPart(property, attr.IsDynamic);
+            return data.Concat(parts).ToList();
+        }
+
+        /// <summary>
+        /// Читает метаданные свойств из части, содержащейся в <paramref name="property"/>.
+        /// </summary>
+        /// <param name="property">Анализируемое свойство модели.</param>
+        /// <param name="isDynamic">True, если для свойства должен быть применён анализ типа <b>значения</b>, иначе тип модели определяется по свойству.</param>
+        /// <returns>Возвращает список метаданных, прочитанных из части.</returns>
+        static IMetadata ReadFromPart(PropertyInfo property, bool isDynamic)
+        {
+            return isDynamic ? (IMetadata) new DynamicPartMetadata(property) : new StaticPartMetadata(property, ReadMetadata(property.PropertyType));
         }
     }
 }
