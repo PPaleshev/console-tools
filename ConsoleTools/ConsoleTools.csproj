@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArgumentParser.cs" />
+    <Compile Include="Binding\PartAttribute.cs" />
     <Compile Include="Binding\MetadataProvider.cs" />
     <Compile Include="Binding\NamedArgumentsPolicyAttribute.cs" />
     <Compile Include="Binding\Kind.cs" />

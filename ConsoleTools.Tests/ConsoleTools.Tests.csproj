@@ -41,6 +41,8 @@
   <ItemGroup>
     <Compile Include="ArgumentParserTests.cs" />
     <Compile Include="ConversionTests.cs" />
+    <Compile Include="Data\DynamicPartModel.cs" />
+    <Compile Include="Data\StaticPartModel.cs" />
     <Compile Include="Data\Enums.cs" />
     <Compile Include="Data\InvalidModel.cs" />
     <Compile Include="Data\ListsModel.cs" />
@@ -50,6 +52,7 @@
     <Compile Include="Data\RequiredPositionalOptions.cs" />
     <Compile Include="Data\SampleModel.cs" />
     <Compile Include="Data\UsageModel.cs" />
+    <Compile Include="PartTests.cs" />
     <Compile Include="PropertyKeyTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ModelBindingTests.cs" />

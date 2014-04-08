@@ -17,6 +17,6 @@ namespace ConsoleTools.Binding {
         /// <summary>
         /// Позиционный аргумент.
         /// </summary>
-        Positional
+        Positional,
     }
 }

@@ -53,9 +53,9 @@ namespace ConsoleTools.Utils
         {
             ApplicationInfo = infoProvider;
             Writer = writer;
-            var properties = MetadataProvider.ReadPropertyMetadata(modelType);
+            var properties = MetadataProvider.ReadMetadata(modelType);
             HasNoArguments = properties.Count == 0;
-            var data = properties.GroupBy(metadata => metadata.PropertyKind).ToDictionary(g => g.Key, g => g.ToList());
+            var data = properties.OfType<PropertyMetadata>().GroupBy(metadata => metadata.PropertyKind).ToDictionary(g => g.Key, g => g.ToList());
             List<PropertyMetadata> temp;
             if (data.TryGetValue(Kind.Named, out temp))
                 NamedProperties = temp;
@@ -64,7 +64,7 @@ namespace ConsoleTools.Utils
             if (data.TryGetValue(Kind.Unbound, out temp))
             {
                 if (temp.Count > 1)
-                    throw new InvalidOperationException("Only one property could be marked by " + typeof(UnboundAttribute).Name);
+                    throw new InvalidOperationException("Only one property could be marked by " + typeof (UnboundAttribute).Name);
                 if (temp.Count == 1)
                     UnboundProperty = temp[0];
             }

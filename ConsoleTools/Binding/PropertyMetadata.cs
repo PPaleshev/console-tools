@@ -1,14 +1,16 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using ConsoleTools.Conversion;
 
 namespace ConsoleTools.Binding {
+
     /// <summary>
     /// Метаданные свойства модели.
     /// </summary>
-    public class PropertyMetadata
+    public class PropertyMetadata : IMetadata
     {
         /// <summary>
         /// Модель свойства.
@@ -113,5 +115,57 @@ namespace ConsoleTools.Binding {
             foreach (SpecificationAttribute attribute in attributes)
                 attribute.UpdateSpecification(spec);
         }
+    }
+
+    /// <summary>
+    /// Метаданные статической части модели.
+    /// </summary>
+    public class StaticPartMetadata : IMetadata
+    {
+        public PropertyInfo Property { get; private set; }
+
+        /// <summary>
+        /// Список метаданных свойств части модели.
+        /// </summary>
+        public IList<IMetadata> Properties { get; private set; }
+
+        /// <summary>
+        /// Создаёт новый экземпляр метаданных части модели.
+        /// </summary>
+        /// <param name="property">Родительское свойство.</param>
+        /// <param name="properties">Список дочерних свойств части.</param>
+        public StaticPartMetadata(PropertyInfo property, IList<IMetadata> properties)
+        {
+            Property = property;
+            Properties = properties;
+        }
+    }
+
+    /// <summary>
+    /// Метаданные динамической части модели.
+    /// </summary>
+    public class DynamicPartMetadata : IMetadata
+    {
+        public PropertyInfo Property { get; private set; }
+
+        /// <summary>
+        /// Создаёт новый экземпляр динамической части модели.
+        /// </summary>
+        /// <param name="property">Свойство, содержащее динамическую часть модели.</param>
+        public DynamicPartMetadata(PropertyInfo property)
+        {
+            Property = property;
+        }
+    }
+
+    /// <summary>
+    /// Интерфейс к метаданным свойства.
+    /// </summary>
+    public interface IMetadata
+    {
+        /// <summary>
+        /// Модель свойства.
+        /// </summary>
+        PropertyInfo Property { get; }
     }
 }
